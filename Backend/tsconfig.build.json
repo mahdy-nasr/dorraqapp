@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "listEmittedFiles": true,
+    "diagnostics": true,
+    "pretty": true,
+    "sourceMap": true,
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tests",
+    "primsa",
+  ],
+}

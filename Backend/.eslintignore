@@ -1,0 +1,13 @@
+.commitlintrc*
+.docker
+.eslintcache
+.eslintrc*
+.prettierrc*
+node_modules
+coverage
+dist
+logs
+package-lock.json
+yarn.lock
+public
+jest.config.*
