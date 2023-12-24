@@ -3,23 +3,21 @@
     "node": true,
     "es2021": true
   },
-  "plugins": [
-    "unicorn",
-    "prettier"
-  ],
-  "extends": [
-    "standard-with-typescript",
-    "plugin:prettier/recommended"
-  ],
+  "plugins": ["unicorn", "prettier"],
+  "extends": ["standard-with-typescript", "plugin:prettier/recommended"],
   "overrides": [],
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module",
-    "project": "./tsconfig.eslint.json"
+    "project": "../Backend/tsconfig.eslint.json",
+    "tsconfigRootDir": "__dirname"
   },
   "rules": {
     "prettier/prettier": [
-      "error"
+      "error",
+      {
+        "endOfLine": "auto"
+      }
     ],
     "unicorn/filename-case": [
       "warn",

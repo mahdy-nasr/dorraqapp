@@ -9,7 +9,7 @@ import {
 } from 'winston';
 import environment from './environment';
 import { LOG_DATE_FORMAT } from '@/utils/constants';
-import appConfig from '@/config/app.config';
+import appConfig from '@/AppConfig/app.config';
 
 const {
   logs: { dir: logDir, logFile, errorLogFile },

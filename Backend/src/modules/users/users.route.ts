@@ -1,8 +1,7 @@
 import { Router } from 'express';
+import passportLibrary from 'passport';
 import Controller from './users.controller';
-import { CreateUserDto } from '@/dto/user.dto';
-import RequestValidator from '@/middlewares/request-validator';
-import { verifyAuthToken } from '@/middlewares/auth';
+import passport from '@/AppConfig/GoogleAuthConfig/passport-setup';
 
 const users: Router = Router();
 const controller = new Controller();
@@ -30,11 +29,23 @@ const controller = new Controller();
  * @param {CreateUserBody} request.body.required
  * @return {User} 201 - user created
  */
-users.post(
-  '/create',
-  verifyAuthToken,
-  RequestValidator.validate(CreateUserDto),
-  controller.createUser
+/** Login */
+// auth with google
+users.get(
+  '/auth/google',
+  passport.authenticate('google', {
+    scope: ['profile', 'email'],
+  })
 );
-
+// callback route for google to redirect
+users.get(
+  '/auth/google/redirect',
+  passport.authenticate('google'),
+  controller.authRedirectGoogle
+);
+// auth logout
+users.post('/auth/logout', controller.authLogout);
 export default users;
+
+// initialize session
+users.use(passportLibrary.session());

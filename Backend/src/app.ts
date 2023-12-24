@@ -4,14 +4,13 @@ import express from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import expressJSDocSwagger from 'express-jsdoc-swagger';
-import home from './home';
 import environment from './lib/environment';
-import expressJSDocSwaggerConfig from './config/express-jsdoc-swagger.config';
-import appConfig from './config/app.config';
+import expressJSDocSwaggerConfig from './AppConfig/express-jsdoc-swagger.config';
+import appConfig from './AppConfig/app.config';
 import errorHandler from '@/middlewares/error-handler';
 import routes from '@/modules/index';
 import prismaClient from '@/lib/prisma';
-
+import { setupSession } from '@/AppConfig/SessionConfig/session-config';
 class App {
   public express: express.Application;
 
@@ -22,6 +21,7 @@ class App {
     this.setRoutes();
     this.setErrorHandler();
     this.initializeDocs();
+    this.setupSession();
   }
 
   private setMiddlewares(): void {
@@ -43,7 +43,6 @@ class App {
       api: { version },
     } = appConfig;
     const { env } = environment;
-    this.express.use('/', home);
     this.express.use(`/api/${version}/${env}`, routes);
   }
 
@@ -57,6 +56,10 @@ class App {
 
   public async connectPrisma(): Promise<void> {
     await prismaClient.$connect();
+  }
+
+  private setupSession(): void {
+    setupSession(this.express);
   }
 }
 

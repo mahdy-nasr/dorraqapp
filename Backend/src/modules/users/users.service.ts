@@ -1,11 +1,44 @@
-import { type users } from '@prisma/client';
+import { type user } from '@prisma/client';
 import prisma from '@/lib/prisma';
-import LogMessage from '@/decorators/log-message.decorator';
 
 export default class UserService {
-  @LogMessage<[users]>({ message: 'test-decorator' })
-  public async createUser(data: users) {
-    const user = await prisma.users.create({ data });
+  public async createUser(
+    name: string,
+    email: string,
+    profilePicture: string
+  ): Promise<user> {
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        profilePicture,
+      },
+    });
+    console.log('user1');
     return user;
+  }
+
+  public async findUserByEmail(email: string) {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { email },
+      });
+      return user;
+    } catch (error) {
+      console.error('Error finding user by email:', error);
+      throw error;
+    }
+  }
+
+  public async findUserById(id: string) {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id },
+      });
+      return user;
+    } catch (error) {
+      console.error('Error finding user by ID:', error);
+      throw error;
+    }
   }
 }
