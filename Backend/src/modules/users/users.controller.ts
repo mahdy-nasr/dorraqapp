@@ -5,18 +5,6 @@ import Api from '@/lib/api';
 export default class UserController extends Api {
   private readonly userService = new UserService();
 
-  public authLogin = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
-    try {
-      res.send('login');
-    } catch (e) {
-      next(e);
-    }
-  };
-
   public authLogout = async (
     req: Request,
     res: Response,
@@ -26,7 +14,8 @@ export default class UserController extends Api {
       // handle with passport
       req.logout(function (err) {
         if (err) {
-          console.log(err);
+          next(err);
+          return;
         }
         res.redirect('/');
       });
@@ -43,7 +32,6 @@ export default class UserController extends Api {
     try {
       // handle with passport
       res.send(req.user);
-      // res.redirect('/profile');
     } catch (e) {
       next(e);
     }

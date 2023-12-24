@@ -10,13 +10,13 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model users {
+model user  {
   id String @id @db.Uuid @default(uuid())
   email  String  @unique @db.VarChar(255)
   name  String @db.VarChar(255)
-  phone String? @db.VarChar(255)
+  phone String? @db.VarChar(30)
   profilePicture String? @db.VarChar(255)
-  country String? @db.VarChar(255) 
-  university String?@db.VarChar(255)
-  language String? @db.VarChar(255)
+  country String? @db.VarChar(100) 
+  university String?@db.VarChar(100)
+  language String? @db.VarChar(100)
 }

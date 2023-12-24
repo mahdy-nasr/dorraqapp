@@ -1,6 +1,7 @@
 import { Router } from 'express';
+import passportLibrary from 'passport';
 import Controller from './users.controller';
-import passport from '@/config/passport-setup';
+import passport from '@/AppConfig/GoogleAuthConfig/passport-setup';
 
 const users: Router = Router();
 const controller = new Controller();
@@ -29,8 +30,6 @@ const controller = new Controller();
  * @return {User} 201 - user created
  */
 /** Login */
-// auth login
-users.get('/auth/login', controller.authLogin);
 // auth with google
 users.get(
   '/auth/google',
@@ -45,5 +44,8 @@ users.get(
   controller.authRedirectGoogle
 );
 // auth logout
-users.get('/auth/logout', controller.authLogout);
+users.post('/auth/logout', controller.authLogout);
 export default users;
+
+// initialize session
+users.use(passportLibrary.session());

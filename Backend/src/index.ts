@@ -1,7 +1,7 @@
 import { config as configDotenv } from 'dotenv';
 import server from './server';
 import { printAppInfo } from './utils/print-app-info';
-import appConfig from './config/app.config';
+import appConfig from './AppConfig/app.config';
 import prismaClient from '@/lib/prisma';
 import environment from '@/lib/environment';
 

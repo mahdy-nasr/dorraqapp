@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { HR } from './helper';
-import appConfig from '@/config/app.config';
+import appConfig from '@/AppConfig/app.config';
 import environment from '@/lib/environment';
 import { logWithoutConsole } from '@/lib/logger';
 
