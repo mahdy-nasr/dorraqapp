@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "CommonJS",
-    "lib": [
-      "ESNext"
-    ],
+    "module": "ES2020",
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": [
+      "ES2020",
+      "DOM"
+    ],
     "moduleResolution": "Node",
     "outDir": "dist",
     "experimentalDecorators": true,
