@@ -1,10 +1,9 @@
 {
-  "name": "expressjs-typescript-prisma-boilerplate",
-  "version": "2.0.4",
-  "description": "expressjs typescript boilerplate with prisma",
+  "name": "Dorraq",
+  "version": "1.0.0",
+  "description": "Dorraq Backend",
   "main": "index.ts",
   "scripts": {
-    "prepare": "is-ci || husky install",
     "prebuild": "npm run clean:build",
     "build": "npm run prisma:generate && tsc --build --verbose tsconfig.build.json && tsc-alias -p tsconfig.json",
     "start": "FORCE_COLOR=2 node ./dist/index.js",
@@ -34,19 +33,11 @@
       "path": "cz-conventional-changelog"
     }
   },
-  "author": "akhil chandran",
+  "author": "Dev Team @ Dorraq",
   "engines": {
     "node": ">=16.0.0"
   },
-  "repository": "git@github.com:akhil-neoito/expressjs-typescript-prisma-boilerplate.git",
-  "keywords": [
-    "NodeJS",
-    "TypeScript",
-    "express",
-    "prisma",
-    "boilerplate"
-  ],
-  "license": "MIT",
+  "repository": "git@github.com:mahdy-nasr/dorraqapp.git",
   "dependencies": {
     "@prisma/client": "^5.6.0",
     "axios": "^1.4.0",
@@ -99,7 +90,6 @@
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-unicorn": "^48.0.1",
     "express-jsdoc-swagger": "^1.8.0",
-    "husky": "^8.0.0",
     "is-ci": "^3.0.1",
     "jest": "^29.6.2",
     "lint-staged": "^13.2.3",
