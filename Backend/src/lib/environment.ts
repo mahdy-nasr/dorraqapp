@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { config as configDotenv } from 'dotenv';
 import { cleanEnv } from 'envalid';
 import { EnvironmentFile, Environments } from '@/enums/environment.enum';
@@ -54,7 +55,9 @@ class Environment implements IEnvironment {
   private resolveEnvPath(key: CommonEnvKeys): string {
     // On priority bar, .env.[NODE_ENV] has higher priority than default env file (.env)
     // If both are not resolved, error is thrown.
-    const rootDir: string = path.resolve(__dirname, '../../');
+    const currentFile = fileURLToPath(import.meta.url);
+    const currentDir = path.dirname(currentFile);
+    const rootDir: string = path.resolve(currentDir, '../../');
     const envPath = path.resolve(rootDir, EnvironmentFile[key]);
     const defaultEnvPath = path.resolve(rootDir, EnvironmentFile.DEFAULT);
     if (!fs.existsSync(envPath) && !fs.existsSync(defaultEnvPath)) {

@@ -1,13 +1,17 @@
 import * as path from 'path';
+import { fileURLToPath } from 'url';
 import appConfig from './app.config';
 import environment from '@/lib/environment';
+import { Environments } from '@/enums/environment.enum';
 
 const { env, port } = environment;
 const {
   api: { basePath, version },
   docs: { swaggerUIPath, apiDocsPath },
 } = appConfig;
-const baseDir = path.join(__dirname, '../../');
+const currentFile = fileURLToPath(import.meta.url);
+const currentDir = path.dirname(currentFile);
+const baseDir = path.join(currentDir, '../../');
 const expressJSDocSwaggerConfig = {
   info: {
     version: '1.0.0',
@@ -19,7 +23,7 @@ const expressJSDocSwaggerConfig = {
   },
   servers: [
     {
-      url: `${environment.appUrl}:${port}/{basePath}/{version}/{env}`,
+      url: `${environment.appUrl}:${port}/{basePath}/{version}`,
       description: 'Express Server',
       variables: {
         port: {
@@ -30,9 +34,6 @@ const expressJSDocSwaggerConfig = {
         },
         version: {
           default: version,
-        },
-        env: {
-          default: env,
         },
       },
     },
@@ -49,9 +50,9 @@ const expressJSDocSwaggerConfig = {
   // URL where SwaggerUI will be rendered
   swaggerUIPath,
   // Expose OpenAPI UI
-  exposeSwaggerUI: true,
+  exposeSwaggerUI: env !== Environments.PRODUCTION,
   // Expose Open API JSON Docs documentation in `apiDocsPath` path.
-  exposeApiDocs: true,
+  exposeApiDocs: env !== Environments.PRODUCTION,
   // Open API JSON Docs endpoint.
   apiDocsPath,
   // Set non-required fields as nullable by default
