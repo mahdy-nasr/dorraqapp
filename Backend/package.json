@@ -20,7 +20,6 @@
     "prisma:seed": "npx prisma db seed",
     "prisma:studio": "npx prisma studio",
     "check:types": "tsc --noEmit",
-    "commit": "git-cz",
     "test": "jest",
     "test:e2e": "jest -c jest.config.e2e.ts",
     "test:integration": "jest -c jest.config.integration.ts",
@@ -28,11 +27,6 @@
   },
   "prisma": {
     "seed": "txs prisma/seed.ts"
-  },
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    }
   },
   "author": "Dev Team @ Dorraq",
   "engines": {
@@ -62,8 +56,6 @@
     "winston": "^3.10.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.6.7",
-    "@commitlint/config-conventional": "^17.6.7",
     "@faker-js/faker": "^8.0.2",
     "@types/cookie-session": "^2.0.48",
     "@types/dotenv": "^6.1.1",
@@ -79,7 +71,6 @@
     "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^5.48.2",
     "chalk": "4.1.2",
-    "commitizen": "^4.3.0",
     "eslint": "^8.55.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-standard-with-typescript": "^37.0.0",
