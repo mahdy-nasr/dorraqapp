@@ -10,7 +10,7 @@ const envValidationConfig = {
   APP_BASE_URL: str(),
   DATABASE_URL: str(),
   SESSION_ENC_KEY: str(),
-  GOOGLE_CLIENT_ID: str(),
+  FIREBASE_PROJECT_ID: str(),
   GOOGLE_CLIENT_SECRET: str(),
 };
 

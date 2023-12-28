@@ -7,7 +7,8 @@ import expressJSDocSwagger from 'express-jsdoc-swagger';
 import expressJSDocSwaggerConfig from './AppConfig/express-jsdoc-swagger.config';
 import appConfig from './AppConfig/app.config';
 import { setupSession } from './middlewares/session';
-import { setupPassport } from './middlewares/passport';
+import { setupFirebase } from './lib/firebase';
+import { verifyAuthToken } from './lib/authentication/auth.middleware';
 import errorHandler from '@/middlewares/error-handler';
 import routes from '@/modules/index';
 import prismaClient from '@/lib/prisma';
@@ -21,8 +22,8 @@ class App {
     this.setRoutes();
     this.setErrorHandler();
     this.initializeDocs();
-    this.setupSession();
-    this.setupPassport();
+    setupSession(this.express);
+    setupFirebase();
   }
 
   private setMiddlewares(): void {
@@ -33,6 +34,7 @@ class App {
     this.express.use(express.urlencoded({ extended: true }));
     this.express.use(helmet());
     this.express.use(express.static('public'));
+    this.express.use(verifyAuthToken);
   }
 
   private disableSettings(): void {
@@ -56,14 +58,6 @@ class App {
 
   public async connectPrisma(): Promise<void> {
     await prismaClient.$connect();
-  }
-
-  private setupSession(): void {
-    setupSession(this.express);
-  }
-
-  private setupPassport(): void {
-    setupPassport(this.express);
   }
 }
 

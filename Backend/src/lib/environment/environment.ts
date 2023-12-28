@@ -9,7 +9,7 @@ import {
 } from '@/lib/environment/environment.enum';
 import envValidationConfig from '@/lib/environment/env-config.def';
 import { envFileNotFoundError } from '@/utils/helper';
-import { type CommonEnvKeys } from '@/types/environment.type';
+import { type CommonEnvKeys } from '@/lib/environment/environment.type';
 import appConfig from '@/AppConfig/app.config';
 
 export interface IEnvironment {
@@ -53,8 +53,7 @@ class Environment implements IEnvironment {
   private populateAppConfig() {
     const env = cleanEnv(process.env, envValidationConfig);
     appConfig.session.encryptionKey = env.SESSION_ENC_KEY;
-    appConfig.googleAuth.clientID = env.GOOGLE_CLIENT_ID;
-    appConfig.googleAuth.clientSecret = env.GOOGLE_CLIENT_SECRET;
+    appConfig.firebaseProjectID = env.FIREBASE_PROJECT_ID;
     appConfig.databaseURL = env.DATABASE_URL;
     appConfig.server.baseUrl = env.APP_BASE_URL;
     appConfig.server.port = env.PORT;

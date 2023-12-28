@@ -5,10 +5,7 @@ const appConfig: AppConfig = {
     encryptionKey: 'encryption_key',
     maxAge: 60 * 60 * 24 * 1000, // 3 years
   },
-  googleAuth: {
-    clientID: 'client_id',
-    clientSecret: 'client_secret',
-  },
+  firebaseProjectID: 'dorraq-dev',
   databaseURL: 'postgres://postgres:postgres@localhost:5432/postgres',
   api: {
     basePath: 'api',
