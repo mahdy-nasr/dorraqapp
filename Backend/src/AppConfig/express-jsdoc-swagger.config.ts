@@ -1,10 +1,10 @@
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import appConfig from './app.config';
-import environment from '@/lib/environment';
-import { Environments } from '@/enums/environment.enum';
+import environment from '@/lib/environment/environment';
+import { Environments } from '@/lib/environment/environment.enum';
 
-const { env, port } = environment;
+const { env } = environment;
 const {
   api: { basePath, version },
   docs: { swaggerUIPath, apiDocsPath },
@@ -23,11 +23,11 @@ const expressJSDocSwaggerConfig = {
   },
   servers: [
     {
-      url: `${environment.appUrl}:${port}/{basePath}/{version}`,
+      url: `${appConfig.server.baseUrl}:${appConfig.server.port}/{basePath}/{version}`,
       description: 'Express Server',
       variables: {
         port: {
-          default: port,
+          default: appConfig.server.port,
         },
         basePath: {
           default: basePath,

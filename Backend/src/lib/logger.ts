@@ -7,8 +7,7 @@ import {
   type LogEntry,
   transports,
 } from 'winston';
-import environment from './environment';
-import { LOG_DATE_FORMAT } from '@/utils/constants';
+import environment from './environment/environment';
 import appConfig from '@/AppConfig/app.config';
 
 const {
@@ -39,7 +38,7 @@ const logFormattter = printf(({ level, message, label, timestamp }) => {
 const logger: Logger = createLogger({
   format: combine(
     label({ label: environment.env }),
-    timestamp({ format: LOG_DATE_FORMAT }),
+    timestamp({ format: appConfig.logs.logDateFormat }),
     json(),
     prettyPrint({ colorize: true }),
     logFormattter

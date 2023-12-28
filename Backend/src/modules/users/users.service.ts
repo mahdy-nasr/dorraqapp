@@ -1,4 +1,4 @@
-import { type user } from '@prisma/client';
+import { type User } from '@prisma/client';
 import prisma from '@/lib/prisma';
 
 export default class UserService {
@@ -6,7 +6,7 @@ export default class UserService {
     name: string,
     email: string,
     profilePicture: string
-  ): Promise<user> {
+  ): Promise<User> {
     const user = await prisma.user.create({
       data: {
         name,

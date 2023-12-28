@@ -1,48 +1,15 @@
-import { DEFAULT_PORT } from '@/utils/constants';
-
-interface AppConfig {
-  api: {
-    /**
-     * Api base path
-     */
-    basePath: string;
-
-    /**
-     * Api version
-     */
-    version: string;
-  };
-  docs: {
-    /**
-     * Swagger ui path
-     */
-    swaggerUIPath: string;
-
-    /**
-     * Open api specs path
-     */
-    apiDocsPath: string;
-  };
-  logs: {
-    /**
-     * Folder where log files would be saved
-     */
-    dir: string;
-
-    /**
-     * File name in which the combined logs of app would be written
-     */
-    logFile: string;
-
-    /**
-     * File name of error logs
-     */
-    errorLogFile: string;
-  };
-  defaultPort: number;
-}
+import { type AppConfig } from './app-config.definition';
 
 const appConfig: AppConfig = {
+  session: {
+    encryptionKey: 'encryption_key',
+    maxAge: 60 * 60 * 24 * 1000, // 3 years
+  },
+  googleAuth: {
+    clientID: 'client_id',
+    clientSecret: 'client_secret',
+  },
+  postgresConnString: 'postgres://postgres:postgres@localhost:5432/postgres',
   api: {
     basePath: 'api',
     version: 'v1',
@@ -55,8 +22,12 @@ const appConfig: AppConfig = {
     dir: './logs',
     logFile: 'app.log',
     errorLogFile: 'error.log',
+    logDateFormat: 'DD-MM-YYYY HH:MM:SS',
   },
-  defaultPort: DEFAULT_PORT,
+  server: {
+    port: 3000,
+    baseUrl: 'http://localhost',
+  },
 };
 
 export default appConfig;

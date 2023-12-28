@@ -6,10 +6,11 @@ import morgan from 'morgan';
 import expressJSDocSwagger from 'express-jsdoc-swagger';
 import expressJSDocSwaggerConfig from './AppConfig/express-jsdoc-swagger.config';
 import appConfig from './AppConfig/app.config';
+import { setupSession } from './middlewares/session';
+import { setupPassport } from './middlewares/passport';
 import errorHandler from '@/middlewares/error-handler';
 import routes from '@/modules/index';
 import prismaClient from '@/lib/prisma';
-import { setupSession } from '@/AppConfig/SessionConfig/session-config';
 class App {
   public express: express.Application;
 
@@ -21,6 +22,7 @@ class App {
     this.setErrorHandler();
     this.initializeDocs();
     this.setupSession();
+    this.setupPassport();
   }
 
   private setMiddlewares(): void {
@@ -58,6 +60,10 @@ class App {
 
   private setupSession(): void {
     setupSession(this.express);
+  }
+
+  private setupPassport(): void {
+    setupPassport(this.express);
   }
 }
 
