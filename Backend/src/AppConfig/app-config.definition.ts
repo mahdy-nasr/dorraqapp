@@ -1,7 +1,7 @@
 export interface AppConfig {
   googleAuth: GoogleAuthConfig;
   session: sessionConfig;
-  postgresConnString: string;
+  databaseURL: string;
   api: ApiConfig;
   docs: SwaggerConfig;
   logs: LogsConfig;

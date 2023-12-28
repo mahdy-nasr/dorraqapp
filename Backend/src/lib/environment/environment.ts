@@ -55,7 +55,7 @@ class Environment implements IEnvironment {
     appConfig.session.encryptionKey = env.SESSION_ENC_KEY;
     appConfig.googleAuth.clientID = env.GOOGLE_CLIENT_ID;
     appConfig.googleAuth.clientSecret = env.GOOGLE_CLIENT_SECRET;
-    appConfig.postgresConnString = env.DATABASE_URL;
+    appConfig.databaseURL = env.DATABASE_URL;
     appConfig.server.baseUrl = env.APP_BASE_URL;
     appConfig.server.port = env.PORT;
   }

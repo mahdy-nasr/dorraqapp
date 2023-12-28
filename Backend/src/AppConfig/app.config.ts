@@ -9,7 +9,7 @@ const appConfig: AppConfig = {
     clientID: 'client_id',
     clientSecret: 'client_secret',
   },
-  postgresConnString: 'postgres://postgres:postgres@localhost:5432/postgres',
+  databaseURL: 'postgres://postgres:postgres@localhost:5432/postgres',
   api: {
     basePath: 'api',
     version: 'v1',
