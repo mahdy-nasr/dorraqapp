@@ -1,7 +1,6 @@
 import { Router } from 'express';
-import passportLibrary from 'passport';
+import passport from 'passport';
 import Controller from './users.controller';
-import passport from '@/AppConfig/GoogleAuthConfig/passport-setup';
 
 const users: Router = Router();
 const controller = new Controller();
@@ -46,6 +45,3 @@ users.get(
 // auth logout
 users.post('/auth/logout', controller.authLogout);
 export default users;
-
-// initialize session
-users.use(passportLibrary.session());

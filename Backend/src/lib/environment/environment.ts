@@ -3,8 +3,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { config as configDotenv } from 'dotenv';
 import { cleanEnv } from 'envalid';
-import { EnvironmentFile, Environments } from '@/enums/environment.enum';
-import envValidationConfig from '@/AppConfig/env-validation.config';
+import {
+  EnvironmentFile,
+  Environments,
+} from '@/lib/environment/environment.enum';
+import envValidationConfig from '@/lib/environment/env-config.def';
 import { envFileNotFoundError } from '@/utils/helper';
 import { type CommonEnvKeys } from '@/types/environment.type';
 import appConfig from '@/AppConfig/app.config';
@@ -19,12 +22,9 @@ export interface IEnvironment {
 }
 
 class Environment implements IEnvironment {
-  private _port: number;
   private _env: Environments;
-  private _appUrl: string;
 
   constructor() {
-    this.port = +process.env.PORT ?? appConfig.defaultPort;
     this.setEnvironment(process.env.NODE_ENV ?? Environments.DEV);
   }
 
@@ -36,28 +36,12 @@ class Environment implements IEnvironment {
     this._env = value;
   }
 
-  get port() {
-    return this._port;
-  }
-
-  set port(value) {
-    this._port = value;
-  }
-
-  get appUrl() {
-    return this._appUrl;
-  }
-
-  set appUrl(value) {
-    this._appUrl = value;
-  }
-
   private resolveEnvPath(key: CommonEnvKeys): string {
     // On priority bar, .env.[NODE_ENV] has higher priority than default env file (.env)
     // If both are not resolved, error is thrown.
     const currentFile = fileURLToPath(import.meta.url);
     const currentDir = path.dirname(currentFile);
-    const rootDir: string = path.resolve(currentDir, '../../');
+    const rootDir: string = path.resolve(currentDir, '../../../');
     const envPath = path.resolve(rootDir, EnvironmentFile[key]);
     const defaultEnvPath = path.resolve(rootDir, EnvironmentFile.DEFAULT);
     if (!fs.existsSync(envPath) && !fs.existsSync(defaultEnvPath)) {
@@ -66,10 +50,14 @@ class Environment implements IEnvironment {
     return fs.existsSync(envPath) ? envPath : defaultEnvPath;
   }
 
-  private validateEnvValues() {
+  private populateAppConfig() {
     const env = cleanEnv(process.env, envValidationConfig);
-    this.port = env.PORT;
-    this.appUrl = env.APP_BASE_URL;
+    appConfig.session.encryptionKey = env.SESSION_ENC_KEY;
+    appConfig.googleAuth.clientID = env.GOOGLE_CLIENT_ID;
+    appConfig.googleAuth.clientSecret = env.GOOGLE_CLIENT_SECRET;
+    appConfig.databaseURL = env.DATABASE_URL;
+    appConfig.server.baseUrl = env.APP_BASE_URL;
+    appConfig.server.port = env.PORT;
   }
 
   public setEnvironment(env = Environments.DEV): void {
@@ -79,9 +67,8 @@ class Environment implements IEnvironment {
       (key) => Environments[key] === this.env
     ) as keyof typeof Environments;
     const envPath = this.resolveEnvPath(envKey);
-
     configDotenv({ path: envPath });
-    this.validateEnvValues();
+    this.populateAppConfig();
   }
 
   public getCurrentEnvironment() {

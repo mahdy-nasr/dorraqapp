@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { EnvironmentFile } from '../enums/environment.enum';
+import { EnvironmentFile } from '../lib/environment/environment.enum';
 import { type CommonEnvKeys } from '@/types/environment.type';
 
 export type ChalkColor = typeof chalk.Color;

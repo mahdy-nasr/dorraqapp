@@ -3,7 +3,7 @@ import { type NextFunction, type Request, type Response } from 'express';
 import { HttpStatusCode } from 'axios';
 import { type ApiError } from '@/lib/errors';
 import logger from '@/lib/logger';
-import environment from '@/lib/environment';
+import environment from '@/lib/environment/environment';
 
 interface ErrorBody {
   success: false;

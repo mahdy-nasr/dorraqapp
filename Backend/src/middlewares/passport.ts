@@ -1,10 +1,11 @@
 import passport from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
-import { type user } from '@prisma/client'; // Make sure to import the User type from Prisma
-import googleKeys from '../GoogleAuthConfig/google-keys';
+import { type User } from '@prisma/client'; // Make sure to import the User type from Prisma
+import type express from 'express';
 import UserService from '@/modules/users/users.service';
+import appConfig from '@/AppConfig/app.config';
 
-passport.serializeUser((user: user, done) => {
+passport.serializeUser((user: User, done) => {
   done(null, user.id);
 });
 
@@ -23,12 +24,17 @@ passport.deserializeUser(async (id: string, done) => {
   }
 });
 
+export const setupPassport = (app: express.Application) => {
+  app.use(passport.initialize());
+  app.use(passport.session());
+};
+
 export default passport.use(
   new GoogleStrategy(
     {
       // options for google strategy
-      clientID: googleKeys.google.clientID,
-      clientSecret: googleKeys.google.clientSecret,
+      clientID: appConfig.googleAuth.clientID,
+      clientSecret: appConfig.googleAuth.clientSecret,
       callbackURL:
         'http://localhost:3000/api/v1/development/users/auth/google/redirect',
     },
