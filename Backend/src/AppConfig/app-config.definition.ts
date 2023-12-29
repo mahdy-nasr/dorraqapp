@@ -1,16 +1,11 @@
 export interface AppConfig {
-  googleAuth: GoogleAuthConfig;
+  firebaseProjectID: string;
   session: sessionConfig;
   databaseURL: string;
   api: ApiConfig;
   docs: SwaggerConfig;
   logs: LogsConfig;
   server: ServerConfig;
-}
-
-interface GoogleAuthConfig {
-  clientID: string;
-  clientSecret: string;
 }
 
 interface sessionConfig {
