@@ -29,7 +29,7 @@ export class AuthUser {
   }
 
   async getFullUser(): Promise<User | undefined> {
-    if (this.fullUser || !this.isAuthorized()) {
+    if (this.fullUser ?? !this.isAuthorized()) {
       return this.fullUser;
     }
 
