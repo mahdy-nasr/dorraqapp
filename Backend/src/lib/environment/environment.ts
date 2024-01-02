@@ -11,6 +11,7 @@ import envValidationConfig from '@/lib/environment/env-config.def';
 import { envFileNotFoundError } from '@/utils/helper';
 import { type CommonEnvKeys } from '@/lib/environment/environment.type';
 import appConfig from '@/AppConfig/app.config';
+import { getKeyByEnumValue } from '@/utils/enum-helpers';
 
 export interface IEnvironment {
   getCurrentEnvironment: () => string;
@@ -22,7 +23,7 @@ export interface IEnvironment {
 }
 
 class Environment implements IEnvironment {
-  private _env: Environments;
+  private _env: Environments = Environments.DEV;
 
   constructor() {
     this.setEnvironment(process.env.NODE_ENV ?? Environments.DEV);
@@ -62,9 +63,7 @@ class Environment implements IEnvironment {
   public setEnvironment(env = Environments.DEV): void {
     this.env = env;
 
-    const envKey = Object.keys(Environments).find(
-      (key) => Environments[key] === this.env
-    ) as keyof typeof Environments;
+    const envKey = getKeyByEnumValue(Environments, env)!;
     const envPath = this.resolveEnvPath(envKey);
     configDotenv({ path: envPath });
     this.populateAppConfig();

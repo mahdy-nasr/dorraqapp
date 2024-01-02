@@ -19,7 +19,7 @@ abstract class Api {
    * @returns - The express response object with the provided data and status code.
    */
   public send<T>(
-    res: Response,
+    res: Response<T>,
     data: T,
     statusCode: number = HttpStatusCode.Ok,
     message: string = 'success'
@@ -28,10 +28,12 @@ abstract class Api {
       logger.info(JSON.stringify(data, null, 2));
     }
 
-    return res.status(statusCode).json({
-      message,
-      data,
-    });
+    return (res as Response<{ data: T; message: string }>)
+      .status(statusCode)
+      .json({
+        message,
+        data,
+      });
   }
 
   /**

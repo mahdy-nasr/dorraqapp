@@ -9,7 +9,8 @@ const seedUsers = async (): Promise<void> => {
     () =>
       ({
         id: faker.datatype.uuid(),
-        name: faker.name.fullName(),
+        firstName: faker.name.firstName(),
+        lastName: faker.name.lastName(),
         email: faker.internet.email(),
         phone: null,
         profilePicture: null,
@@ -19,6 +20,7 @@ const seedUsers = async (): Promise<void> => {
         createdAt: faker.date.past(),
         updatedAt: faker.date.recent(),
         enabled: true,
+        role: 'student',
       }) satisfies User,
     3
   );
