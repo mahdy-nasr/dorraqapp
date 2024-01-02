@@ -8,7 +8,12 @@ import { HttpBadRequestError, HttpInternalServerError } from '@/lib/errors';
 export default class UserController extends Api {
   private readonly userService = new UserService();
 
-  public finishUserRegistration = async (
+  public login = async (req: Request, res: Response<User>) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+    this.send(res, req.authUser?.getUser()!);
+  };
+
+  public continueUserRegistration = async (
     req: Request<unknown, unknown, CreateUserRequestDto>,
     res: Response<User>
   ) => {

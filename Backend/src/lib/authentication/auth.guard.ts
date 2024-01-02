@@ -1,5 +1,6 @@
 import { type NextFunction, type Request, type Response } from 'express';
 import { HttpStatusCode } from 'axios';
+import { ApiError, HttpUnAuthorizedError } from '../errors';
 import { type UserRole } from '@/modules/users/users-types';
 
 // This is a middleware that checks if the user is authenticated or not.
@@ -10,12 +11,11 @@ import { type UserRole } from '@/modules/users/users-types';
 export function AuthGuard(role: UserRole | undefined = undefined) {
   return (req: Request, res: Response, next: NextFunction) => {
     if (!req.authUser?.isAuthenticated()) {
-      return res.sendStatus(HttpStatusCode.Forbidden);
+      throw new ApiError(HttpStatusCode.Forbidden, 'User is not authenticated');
     }
     if (!!role && !req.authUser?.isAuthorized(role)) {
-      return res.sendStatus(HttpStatusCode.Unauthorized);
+      throw new HttpUnAuthorizedError('User is not authorized');
     }
-
     // User is authenticated and authorized, continue
     next();
   };

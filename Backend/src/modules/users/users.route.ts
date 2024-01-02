@@ -2,6 +2,7 @@ import { Router } from 'express';
 import UserController from './users.controller';
 import { CreateUserRequestDto } from './dto/user.dto';
 import { RequestTypeValidator } from '@/middlewares/request-validator';
+import { AuthGuard } from '@/lib/authentication/auth.guard';
 
 const users: Router = Router();
 const userController = new UserController();
@@ -37,7 +38,17 @@ const userController = new UserController();
 users.post(
   '/continue-registration',
   RequestTypeValidator(CreateUserRequestDto),
-  userController.finishUserRegistration
+  userController.continueUserRegistration
 );
+
+/**
+ * GET /users/login
+ * @summary Login user
+ * @tags users
+ * @return {User} 200 - user logged in
+ * @return  401 - unauthorized
+ * @return  403 - forbidden
+ */
+users.get('/login', AuthGuard(), userController.login);
 
 export default users;

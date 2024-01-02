@@ -7,7 +7,7 @@ export interface IApiError extends Error {
 
 export class ApiError extends Error implements IApiError {
   statusCode: number;
-  rawErrors: string[]= [];
+  rawErrors: string[] = [];
   constructor(statusCode: number, message: string, rawErrors?: string[]) {
     super(message);
     this.statusCode = statusCode;

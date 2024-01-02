@@ -23,7 +23,7 @@ const expressJSDocSwaggerConfig = {
   },
   servers: [
     {
-      url: `${appConfig.server.baseUrl}:${appConfig.server.port}/{basePath}/{version}`,
+      url: `http://${appConfig.server.baseUrl}:${appConfig.server.port}/{basePath}/{version}`,
       description: 'Express Server',
       variables: {
         basePath: {
@@ -61,5 +61,5 @@ const expressJSDocSwaggerConfig = {
   // multiple option in case you want more that one instance
   multiple: true,
 };
-
+console.log(expressJSDocSwaggerConfig);
 export default expressJSDocSwaggerConfig;
