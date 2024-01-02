@@ -1,87 +1,40 @@
-import { type Response, type NextFunction, type Request } from 'express';
+import { type Response, type Request } from 'express';
+import { type User } from '@prisma/client';
+import { HttpStatusCode as Status } from 'axios';
 import UserService from './users.service';
+import { type CreateUserRequestDto } from './dto/user.dto';
 import Api from '@/lib/api';
-import { firebase } from '@/lib/firebase';
+import { HttpBadRequestError, HttpInternalServerError } from '@/lib/errors';
 export default class UserController extends Api {
   private readonly userService = new UserService();
 
-  public registerUser = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
+  public finishUserRegistration = async (
+    req: Request<unknown, unknown, CreateUserRequestDto>,
+    res: Response<User>
   ) => {
-    try {
-      // Check if the user already exists in the database
-      const idToken = req.header('idToken') ?? ''; // Assuming the frontend sends the Firebase JWT as 'idToken'
-      // Verify the Firebase JWT
-      const decodedToken = await firebase.auth().verifyIdToken(idToken);
-      // Ensure that the expected properties exist in decodedToken
-      if (
-        !decodedToken ||
-        typeof decodedToken !== 'object' ||
-        !decodedToken.email ||
-        !decodedToken.picture
-      ) {
-        throw new Error(
-          'Invalid or incomplete user information in the Firebase JWT.'
-        );
-      }
-      // Extract user details from the JWT and the form
-      const { email, picture } = decodedToken;
-      const { name } = req.body;
-      const existingUser = await this.userService.findUserByEmail(email);
-      if (existingUser) {
-        // User exists
-        console.log('User is already exists');
-        res.json('User is already exists');
-      } else {
-        // Save the new user record in the database
-        const user = await this.userService.createUser(name, email, picture);
-        console.log('User registered:', user);
-        // send a success response
-        res.status(200).json({ message: 'User registered successfully', user });
-      }
-    } catch (e) {
-      next(e);
+    if (req.authUser?.isAuthenticated()) {
+      return this.send(res, req.authUser.getUser()!);
     }
-  };
+    if (!req.authUser?.getDecodedJWT()) {
+      throw new HttpBadRequestError('Invalid JWT token');
+    }
 
-  public loginUser = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+    const decodedJWT = req.authUser?.getDecodedJWT()!;
     try {
-      // Check if the user already exists in the database
-      const idToken = req.body.idToken; // Assuming the frontend sends the Firebase JWT as 'idToken'
-      // Verify the Firebase JWT
-      const decodedToken = await firebase.auth().verifyIdToken(idToken);
-      // Ensure that the expected properties exist in decodedToken
-      if (
-        !decodedToken ||
-        typeof decodedToken !== 'object' ||
-        !decodedToken.email
-      ) {
-        throw new Error(
-          'Invalid or incomplete user information in the Firebase JWT.'
-        );
-      }
-      // Extract user details from the JWT and the form
-      const { email } = decodedToken;
-      const existingUser = await this.userService.findUserByEmail(email);
-      if (existingUser) {
-        // User exists
-        console.log('User is logedIn');
-        res.status(200).json({
-          message: 'User logged in successfully',
-          jwt: idToken,
-          user: existingUser,
-        });
-      } else {
-        res.status(401).json('The user is not logged in');
-      }
-    } catch (e) {
-      next(e);
+      const user = await this.userService.createUser({
+        id: decodedJWT.uid,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: decodedJWT.email!,
+        profilePicture: decodedJWT.picture,
+        phone: decodedJWT.phone_number,
+      });
+      return this.send(res, user, Status.Created);
+    } catch (error) {
+      throw new HttpInternalServerError(
+        (error as Error)?.message ?? 'Error while creating user'
+      );
     }
   };
 }

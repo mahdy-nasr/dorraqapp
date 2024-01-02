@@ -26,9 +26,6 @@ const expressJSDocSwaggerConfig = {
       url: `${appConfig.server.baseUrl}:${appConfig.server.port}/{basePath}/{version}`,
       description: 'Express Server',
       variables: {
-        port: {
-          default: appConfig.server.port,
-        },
         basePath: {
           default: basePath,
         },
@@ -46,7 +43,7 @@ const expressJSDocSwaggerConfig = {
   },
   baseDir,
   // Glob pattern to find your jsdoc files (multiple patterns can be added in an array)
-  filesPattern: `${baseDir}/src/**/*.route.ts`,
+  filesPattern: `${baseDir}src/**/*.route.ts`,
   // URL where SwaggerUI will be rendered
   swaggerUIPath,
   // Expose OpenAPI UI
