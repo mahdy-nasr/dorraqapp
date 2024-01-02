@@ -1,7 +1,6 @@
 import { type User } from '@prisma/client';
 import prisma from '@/lib/prisma';
 
-
 interface CreateUserInput {
   id: string;
   firstName: string;

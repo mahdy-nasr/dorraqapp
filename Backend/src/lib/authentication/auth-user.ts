@@ -19,7 +19,6 @@ export class AuthUser {
     }
   }
 
-
   isAuthorized(role: UserRole): boolean {
     return this.user?.role === role;
   }
