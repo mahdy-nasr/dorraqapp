@@ -61,5 +61,4 @@ const expressJSDocSwaggerConfig = {
   // multiple option in case you want more that one instance
   multiple: true,
 };
-console.log(expressJSDocSwaggerConfig);
 export default expressJSDocSwaggerConfig;
