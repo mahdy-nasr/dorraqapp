@@ -2,20 +2,19 @@ import { lazy, Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import { GuestGuard } from 'src/auth/guard';
-import AuthClassicLayout from 'src/layouts/auth/classic';
+import AuthModernLayout from 'src/layouts/auth/modern';
 
 import { SplashScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
-// JWT
-const JwtLoginPage = lazy(() => import('src/pages/auth/jwt/login'));
-const JwtRegisterPage = lazy(() => import('src/pages/auth/jwt/register'));
+// FIREBASE
+const FirebaseLoginPage = lazy(() => import('src/pages/auth/firebase/login'));
+const FirebaseRegisterPage = lazy(() => import('src/pages/auth/firebase/register'));
 
 // ----------------------------------------------------------------------
 
-const authJwt = {
-  path: 'jwt',
+const authFirebase = {
   element: (
     <Suspense fallback={<SplashScreen />}>
       <Outlet />
@@ -23,12 +22,13 @@ const authJwt = {
   ),
   children: [
     {
+      index: true,
       path: 'login',
       element: (
         <GuestGuard>
-          <AuthClassicLayout>
-            <JwtLoginPage />
-          </AuthClassicLayout>
+          <AuthModernLayout>
+            <FirebaseLoginPage />
+          </AuthModernLayout>
         </GuestGuard>
       ),
     },
@@ -36,9 +36,9 @@ const authJwt = {
       path: 'register',
       element: (
         <GuestGuard>
-          <AuthClassicLayout title="Manage the job more effectively with Minimal">
-            <JwtRegisterPage />
-          </AuthClassicLayout>
+          <AuthModernLayout>
+            <FirebaseRegisterPage />
+          </AuthModernLayout>
         </GuestGuard>
       ),
     },
@@ -48,6 +48,6 @@ const authJwt = {
 export const authRoutes = [
   {
     path: 'auth',
-    children: [authJwt],
+    children: [authFirebase],
   },
 ];

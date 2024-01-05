@@ -33,8 +33,8 @@ type CanRemove = {
   ) => Promise<void>;
   //
   loginWithGoogle?: () => Promise<void>;
-  loginWithGithub?: () => Promise<void>;
-  loginWithTwitter?: () => Promise<void>;
+  loginWithFacebook?: () => Promise<void>;
+  loginWithMicrosoft?: () => Promise<void>;
   //
   loginWithPopup?: (options?: PopupLoginOptions) => Promise<void>;
   loginWithRedirect?: (options?: RedirectLoginOptions) => Promise<void>;
@@ -65,8 +65,8 @@ export type FirebaseContextType = CanRemove & {
   unauthenticated: boolean;
   logout: () => Promise<void>;
   loginWithGoogle: () => Promise<void>;
-  loginWithGithub: () => Promise<void>;
-  loginWithTwitter: () => Promise<void>;
+  loginWithFacebook: () => Promise<void>;
+  loginWithMicrosoft: () => Promise<void>;
   forgotPassword?: (email: string) => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
