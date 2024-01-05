@@ -22,6 +22,7 @@ import { RouterLink } from 'src/routes/components';
 import { useAuthContext } from 'src/auth/hooks';
 
 // import Iconify from 'src/components/iconify';
+import Iconify from 'src/components/iconify/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 import AuthButton from './components/AuthButton';
@@ -151,8 +152,34 @@ export default function FirebaseRegisterView() {
 
   const renderForm = (
     <Stack spacing={2.5}>
-      <RHFTextField name="firstName" label="First name" />
-      <RHFTextField name="lastName" label="Last name" />
+      <RHFTextField
+        name="firstName"
+        label="First name"
+        helperText={
+          <Typography
+            variant="caption"
+            sx={{ display: 'flex', gap: theme.spacing(0.5) }}
+            alignItems="center"
+          >
+            <Iconify icon="material-symbols:info" />
+            First name is required.
+          </Typography>
+        }
+      />
+      <RHFTextField
+        name="lastName"
+        label="Last name"
+        helperText={
+          <Typography
+            variant="caption"
+            sx={{ display: 'flex', gap: theme.spacing(0.5) }}
+            alignItems="center"
+          >
+            <Iconify icon="material-symbols:info" />
+            Last name is required.
+          </Typography>
+        }
+      />
 
       {/* <RHFTextField
         name="password"
