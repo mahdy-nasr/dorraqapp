@@ -20,8 +20,11 @@ model User  {
   phone String? @db.VarChar(30)
   profilePicture String? @db.VarChar(255)
   country String? @db.VarChar(100)
-  university String?@db.VarChar(100)
+  city String? @db.VarChar(100)
+  university String? @db.VarChar(100)
+  education String? @db.VarChar(100)
   language String @default("arabic") @db.VarChar(100)
+  gender String? @db.VarChar(10)
   createdAt DateTime @default(now()) @db.Timestamp(6)
   updatedAt DateTime @updatedAt @db.Timestamp(6)
   enabled Boolean @default(true) @db.Boolean

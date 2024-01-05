@@ -3,6 +3,7 @@ import { type User } from '@prisma/client';
 import { HttpStatusCode as Status } from 'axios';
 import UserService from './users.service';
 import { type CreateUserRequestDto } from './dto/user.dto';
+import { type UpdateUserRequestDto } from './dto/user-settings.dto';
 import Api from '@/lib/api';
 import { HttpBadRequestError, HttpInternalServerError } from '@/lib/errors';
 export default class UserController extends Api {
@@ -39,6 +40,49 @@ export default class UserController extends Api {
     } catch (error) {
       throw new HttpInternalServerError(
         (error as Error)?.message ?? 'Error while creating user'
+      );
+    }
+  };
+
+  public UpdateUserInfo = async (
+    req: Request<unknown, unknown, UpdateUserRequestDto>,
+    res: Response
+  ) => {
+    try {
+      // Check if req.file is defined before accessing its filename property
+      const imageFilePath: string | undefined = req.file?.filename
+        ? encodeURIComponent(req.file.filename)
+        : undefined;
+      console.log(imageFilePath);
+      if (!imageFilePath) {
+        throw new HttpBadRequestError('No image provided');
+      }
+      // const userId = req.authUser?.getUser()?.id;
+      const userId = 'e91635be-5f0b-49ab-bb2a-45b3dba080da';
+      if (!userId) {
+        throw new HttpBadRequestError('User ID not found');
+      }
+      const data = {
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        country: req.body.country,
+        city: req.body.city,
+        university: req.body.university,
+        education: req.body.education,
+        phone: req.body.phone,
+        language: req.body.language,
+        gender: req.body.gender,
+        profilePicture: imageFilePath,
+      };
+      console.log(data);
+      const updatedUser = await this.userService.updateUser({
+        id: userId,
+        data,
+      });
+      return this.send(res, updatedUser, Status.Ok);
+    } catch (error) {
+      throw new HttpInternalServerError(
+        (error as Error)?.message ?? 'Error while updating user information'
       );
     }
   };
