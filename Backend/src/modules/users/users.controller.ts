@@ -53,12 +53,10 @@ export default class UserController extends Api {
       const imageFilePath: string | undefined = req.file?.filename
         ? encodeURIComponent(req.file.filename)
         : undefined;
-      console.log(imageFilePath);
       if (!imageFilePath) {
         throw new HttpBadRequestError('No image provided');
       }
-      // const userId = req.authUser?.getUser()?.id;
-      const userId = 'e91635be-5f0b-49ab-bb2a-45b3dba080da';
+      const userId = req.authUser?.getUser()?.id;
       if (!userId) {
         throw new HttpBadRequestError('User ID not found');
       }
@@ -74,7 +72,6 @@ export default class UserController extends Api {
         gender: req.body.gender,
         profilePicture: imageFilePath,
       };
-      console.log(data);
       const updatedUser = await this.userService.updateUser({
         id: userId,
         data,
