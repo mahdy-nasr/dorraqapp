@@ -70,7 +70,7 @@ export default class UserController extends Api {
         phone: req.body.phone,
         language: req.body.language,
         gender: req.body.gender,
-        profilePicture: imageFilePath,
+        profilePicture: `http://localhost:3000/image/${imageFilePath}`,
       };
       const updatedUser = await this.userService.updateUser({
         id: userId,
