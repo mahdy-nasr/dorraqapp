@@ -9,6 +9,21 @@ interface CreateUserInput {
   profilePicture: string | undefined;
   phone: string | undefined;
 }
+interface UpdateUserInfo {
+  id: string;
+  data: {
+    firstName: string;
+    lastName: string;
+    country: string;
+    city: string;
+    university: string;
+    education: string;
+    phone: string;
+    language: string;
+    profilePicture: string;
+    gender: string;
+  };
+}
 export default class UserService {
   public async createUser(userData: CreateUserInput): Promise<User> {
     const user = await prisma.user.create({
@@ -36,5 +51,26 @@ export default class UserService {
       where: { id },
     });
     return user;
+  }
+
+  public async updateUser(userData: UpdateUserInfo): Promise<User> {
+    const { id, data } = userData;
+
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        country: data.country,
+        city: data.city,
+        university: data.university,
+        education: data.education,
+        phone: data.phone,
+        language: data.language,
+        profilePicture: data.profilePicture,
+        gender: data.gender,
+      },
+    });
+    return updatedUser;
   }
 }

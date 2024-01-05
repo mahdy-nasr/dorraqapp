@@ -46,6 +46,7 @@ class App {
       api: { version },
     } = appConfig;
     this.express.use(`/api/${version}`, routes);
+    this.express.use('/image', express.static('Upload/Images'));
   }
 
   private setErrorHandler(): void {
