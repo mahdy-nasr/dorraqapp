@@ -31,9 +31,9 @@ export default class UserService {
     return user;
   }
 
-  public async findUserById(id: string): Promise<User | null> {
+  public async findUserById(firebaseUid: string): Promise<User | null> {
     const user = await prisma.user.findUnique({
-      where: { id },
+      where: { firebaseUid },
     });
     return user;
   }
