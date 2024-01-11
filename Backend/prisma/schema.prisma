@@ -13,6 +13,7 @@ datasource db {
 model User  {
   @@map("users")
   id String @id @db.Uuid @default(uuid())
+  firebaseUid  String  @unique @db.VarChar(255)
   email  String  @unique @db.VarChar(255)
   firstName  String @db.VarChar(255)
   lastName  String @db.VarChar(255)
