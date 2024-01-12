@@ -13,6 +13,10 @@ const loginPaths: Record<string, string> = {
   firebase: paths.auth.firebase.login,
 };
 
+const registerPaths: Record<string, string> = {
+  firebase: paths.auth.firebase.register,
+};
+
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -30,7 +34,7 @@ export default function AuthGuard({ children }: Props) {
 function Container({ children }: Props) {
   const router = useRouter();
 
-  const { authenticated, method } = useAuthContext();
+  const { authenticated, method, isRegistered } = useAuthContext();
 
   const [checked, setChecked] = useState(false);
 
@@ -45,10 +49,20 @@ function Container({ children }: Props) {
       const href = `${loginPath}?${searchParams}`;
 
       router.replace(href);
+    } else if (!isRegistered) {
+      const searchParams = new URLSearchParams({
+        returnTo: window.location.pathname,
+      }).toString();
+
+      const registerPath = registerPaths[method];
+
+      const href = `${registerPath}?${searchParams}`;
+
+      router.replace(href);
     } else {
       setChecked(true);
     }
-  }, [authenticated, method, router]);
+  }, [authenticated, method, router, isRegistered]);
 
   useEffect(() => {
     check();

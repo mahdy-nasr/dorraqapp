@@ -63,13 +63,13 @@ export type FirebaseContextType = CanRemove & {
   loading: boolean;
   authenticated: boolean;
   unauthenticated: boolean;
+  // isRegistered: Promise<boolean>;
+  isRegistered: boolean;
   logout: () => Promise<void>;
   loginWithGoogle: () => Promise<void>;
   loginWithFacebook: () => Promise<void>;
   loginWithMicrosoft: () => Promise<void>;
-  forgotPassword?: (email: string) => Promise<void>;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
+  register: (firstName: string, lastName: string) => Promise<void>;
 };
 
 export type AmplifyContextType = CanRemove & {

@@ -1,6 +1,5 @@
 import { useContext } from 'react';
 
-// import { AuthContext } from '../context/jwt/auth-context';
 import { AuthContext } from '../context/firebase/auth-context';
 
 // ----------------------------------------------------------------------

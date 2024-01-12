@@ -27,14 +27,18 @@ function Container({ children }: Props) {
   const searchParams = useSearchParams();
 
   const returnTo = searchParams.get('returnTo') || paths.dashboard.root;
+  const registerPath = paths.auth.firebase.register;
 
-  const { authenticated } = useAuthContext();
+  const { authenticated, isRegistered } = useAuthContext();
 
   const check = useCallback(() => {
-    if (authenticated) {
+    if (authenticated && isRegistered) {
       router.replace(returnTo);
     }
-  }, [authenticated, returnTo, router]);
+    if (authenticated && !isRegistered) {
+      router.replace(registerPath);
+    }
+  }, [authenticated, returnTo, router, isRegistered, registerPath]);
 
   useEffect(() => {
     check();

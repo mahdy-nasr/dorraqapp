@@ -1,5 +1,4 @@
 import { useMemo, useEffect, useReducer, useCallback } from 'react';
-import { doc, getDoc, setDoc, collection, getFirestore } from 'firebase/firestore';
 import {
   getAuth,
   signOut,
@@ -8,34 +7,27 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   FacebookAuthProvider,
-  sendEmailVerification,
-  sendPasswordResetEmail,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
 } from 'firebase/auth';
 
-import { firebaseApp } from './lib';
-import { AuthContext } from './auth-context';
-import { AuthUserType, ActionMapType, AuthStateType } from '../../types';
+// import axios, { endpoints } from 'src/utils/axios';
 
-// ----------------------------------------------------------------------
-/**
- * NOTE:
- * We only build demo at basic level.
- * Customer will need to do some extra handling yourself if you want to extend the logic and other features...
- */
+import { AuthContext } from './auth-context';
+import { firebaseApp, isRegistered as isRegister } from './lib';
+import { AuthUserType, ActionMapType, AuthStateType } from '../../types';
 // ----------------------------------------------------------------------
 
 const AUTH = getAuth(firebaseApp);
 
-const DB = getFirestore(firebaseApp);
-
 enum Types {
   INITIAL = 'INITIAL',
+  REGISTER = 'REGISTER',
 }
 
 type Payload = {
   [Types.INITIAL]: {
+    user: AuthUserType;
+  };
+  [Types.REGISTER]: {
     user: AuthUserType;
   };
 };
@@ -54,6 +46,12 @@ const reducer = (state: AuthStateType, action: Action) => {
       user: action.payload.user,
     };
   }
+  if (action.type === Types.REGISTER) {
+    return {
+      ...state,
+      user: action.payload.user,
+    };
+  }
   return state;
 };
 
@@ -67,24 +65,21 @@ export function AuthProvider({ children }: Props) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const initialize = useCallback(() => {
+    // signOut(AUTH);
     try {
       onAuthStateChanged(AUTH, async (user) => {
         if (user) {
           if (user.emailVerified) {
-            const userProfile = doc(DB, 'users', user.uid);
-
-            const docSnap = await getDoc(userProfile);
-
-            const profile = docSnap.data();
-
+            const accessToken = await user.getIdToken();
+            const isRegistered = await isRegister(accessToken);
             dispatch({
               type: Types.INITIAL,
               payload: {
                 user: {
                   ...user,
-                  ...profile,
+                  isRegistered,
                   id: user.uid,
-                  role: 'admin',
+                  role: 'student',
                 },
               },
             });
@@ -116,62 +111,11 @@ export function AuthProvider({ children }: Props) {
     }
   }, []);
 
-  /*
-   * (1) If skip emailVerified
-   * Remove the condition (if/else) : user.emailVerified
-   */
-  /*
-  const initialize = useCallback(() => {
-    try {
-      onAuthStateChanged(AUTH, async (user) => {
-        if (user) {
-          const userProfile = doc(DB, 'users', user.uid);
-
-          const docSnap = await getDoc(userProfile);
-
-          const profile = docSnap.data();
-
-          dispatch({
-            type: Types.INITIAL,
-            payload: {
-              user: {
-                ...user,
-                ...profile,
-                id: user.uid,
-                role: 'admin',
-              },
-            },
-          });
-        } else {
-          dispatch({
-            type: Types.INITIAL,
-            payload: {
-              user: null,
-            },
-          });
-        }
-      });
-    } catch (error) {
-      console.error(error);
-      dispatch({
-        type: Types.INITIAL,
-        payload: {
-          user: null,
-        },
-      });
-    }
-  }, []);
-*/
-
   useEffect(() => {
     initialize();
   }, [initialize]);
 
   // LOGIN
-  const login = useCallback(async (email: string, password: string) => {
-    await signInWithEmailAndPassword(AUTH, email, password);
-  }, []);
-
   const loginWithGoogle = useCallback(async () => {
     const provider = new GoogleAuthProvider();
 
@@ -192,24 +136,39 @@ export function AuthProvider({ children }: Props) {
 
   // REGISTER
   const register = useCallback(
-    async (email: string, password: string, firstName: string, lastName: string) => {
-      const newUser = await createUserWithEmailAndPassword(AUTH, email, password);
+    async (firstName: string, lastName: string): Promise<void> => {
+      const data = {
+        firstName,
+        lastName,
+      };
 
-      /*
-       * (1) If skip emailVerified
-       * Remove : await sendEmailVerification(newUser.user);
-       */
-      await sendEmailVerification(newUser.user);
-
-      const userProfile = doc(collection(DB, 'users'), newUser.user?.uid);
-
-      await setDoc(userProfile, {
-        uid: newUser.user?.uid,
-        email,
-        displayName: `${firstName} ${lastName}`,
-      });
+      if (!data.firstName || !data.lastName) {
+        console.error('first name and last name are required!!!');
+      } else {
+        const accessToken = state.user?.accessToken;
+        console.table({ 'access token': accessToken, ...data });
+        // try {
+        //   const res = await axios.post(endpoints.auth.register, data, {
+        //     headers: {
+        //       Authorization: `Bearer ${accessToken}`,
+        //       'Content-Type': 'application/json',
+        //     },
+        //   });
+        //   const user = await res.data;
+        //   dispatch({
+        //     type: Types.REGISTER,
+        //     payload: {
+        //       user: {
+        //         ...user,
+        //       },
+        //     },
+        //   });
+        // } catch (error) {
+        //   console.log(error);
+        // }
+      }
     },
-    []
+    [state]
   );
 
   // LOGOUT
@@ -217,20 +176,13 @@ export function AuthProvider({ children }: Props) {
     await signOut(AUTH);
   }, []);
 
-  // FORGOT PASSWORD
-  const forgotPassword = useCallback(async (email: string) => {
-    await sendPasswordResetEmail(AUTH, email);
-  }, []);
-
   // ----------------------------------------------------------------------
 
-  /*
-   * (1) If skip emailVerified
-   * const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
-   */
   const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
 
   const status = state.loading ? 'loading' : checkAuthenticated;
+
+  const isRegistered = state.user?.isRegistered;
 
   const memoizedValue = useMemo(
     () => ({
@@ -239,11 +191,9 @@ export function AuthProvider({ children }: Props) {
       loading: status === 'loading',
       authenticated: status === 'authenticated',
       unauthenticated: status === 'unauthenticated',
-      //
-      login,
+      isRegistered,
       logout,
       register,
-      forgotPassword,
       loginWithGoogle,
       loginWithFacebook,
       loginWithMicrosoft,
@@ -251,11 +201,9 @@ export function AuthProvider({ children }: Props) {
     [
       status,
       state.user,
-      //
-      login,
+      isRegistered,
       logout,
       register,
-      forgotPassword,
       loginWithFacebook,
       loginWithGoogle,
       loginWithMicrosoft,
