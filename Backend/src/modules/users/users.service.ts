@@ -2,7 +2,7 @@ import { type User } from '@prisma/client';
 import prisma from '@/lib/prisma';
 
 interface CreateUserInput {
-  id: string;
+  firebaseUid: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -13,7 +13,7 @@ export default class UserService {
   public async createUser(userData: CreateUserInput): Promise<User> {
     const user = await prisma.user.create({
       data: {
-        id: userData.id,
+        firebaseUid: userData.firebaseUid,
         firstName: userData.firstName,
         lastName: userData.lastName,
         email: userData.email,
@@ -31,9 +31,9 @@ export default class UserService {
     return user;
   }
 
-  public async findUserById(id: string): Promise<User | null> {
+  public async findUserById(firebaseUid: string): Promise<User | null> {
     const user = await prisma.user.findUnique({
-      where: { id },
+      where: { firebaseUid },
     });
     return user;
   }

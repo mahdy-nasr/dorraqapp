@@ -28,7 +28,7 @@ export default class UserController extends Api {
     const decodedJWT = req.authUser?.getDecodedJWT()!;
     try {
       const user = await this.userService.createUser({
-        id: decodedJWT.uid,
+        firebaseUid: decodedJWT.uid,
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         email: decodedJWT.email!,

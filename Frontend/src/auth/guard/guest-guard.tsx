@@ -27,6 +27,7 @@ function Container({ children }: Props) {
   const searchParams = useSearchParams();
 
   const returnTo = searchParams.get('returnTo') || paths.dashboard.root;
+
   const registerPath = paths.auth.firebase.register;
 
   const { authenticated, isRegistered } = useAuthContext();
