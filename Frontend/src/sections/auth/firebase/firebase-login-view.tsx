@@ -13,8 +13,6 @@ import { useAuthContext } from 'src/auth/hooks';
 
 import AuthButton from './components/AuthButton';
 
-// ----------------------------------------------------------------------
-
 export default function FirebaseLoginView() {
   const theme = useTheme();
   const { loginWithGoogle, loginWithFacebook, loginWithMicrosoft } = useAuthContext();

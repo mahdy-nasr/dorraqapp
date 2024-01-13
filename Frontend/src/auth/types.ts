@@ -1,7 +1,5 @@
 import { LogoutOptions, PopupLoginOptions, RedirectLoginOptions } from '@auth0/auth0-react';
 
-// ----------------------------------------------------------------------
-
 export type ActionMapType<M extends { [index: string]: any }> = {
   [Key in keyof M]: M[Key] extends undefined
     ? {
@@ -20,8 +18,6 @@ export type AuthStateType = {
   loading: boolean;
   user: AuthUserType;
 };
-
-// ----------------------------------------------------------------------
 
 type CanRemove = {
   login?: (email: string, password: string) => Promise<void>;
@@ -63,7 +59,6 @@ export type FirebaseContextType = CanRemove & {
   loading: boolean;
   authenticated: boolean;
   unauthenticated: boolean;
-  // isRegistered: Promise<boolean>;
   isRegistered: boolean;
   logout: () => Promise<void>;
   loginWithGoogle: () => Promise<void>;
@@ -91,8 +86,6 @@ export type AmplifyContextType = CanRemove & {
   resendCodeRegister: (email: string) => Promise<void>;
   newPassword: (email: string, code: string, password: string) => Promise<void>;
 };
-
-// ----------------------------------------------------------------------
 
 export type Auth0ContextType = CanRemove & {
   user: AuthUserType;

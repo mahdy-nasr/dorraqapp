@@ -7,8 +7,6 @@ import { SplashScreen } from 'src/components/loading-screen';
 
 import { useAuthContext } from '../hooks';
 
-// ----------------------------------------------------------------------
-
 const loginPaths: Record<string, string> = {
   firebase: paths.auth.firebase.login,
 };
@@ -16,8 +14,6 @@ const loginPaths: Record<string, string> = {
 const registerPaths: Record<string, string> = {
   firebase: paths.auth.firebase.register,
 };
-
-// ----------------------------------------------------------------------
 
 type Props = {
   children: React.ReactNode;
@@ -28,8 +24,6 @@ export default function AuthGuard({ children }: Props) {
 
   return <>{loading ? <SplashScreen /> : <Container>{children}</Container>}</>;
 }
-
-// ----------------------------------------------------------------------
 
 function Container({ children }: Props) {
   const router = useRouter();

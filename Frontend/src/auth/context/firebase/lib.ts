@@ -4,13 +4,9 @@ import { initializeApp } from 'firebase/app';
 import axios, { endpoints } from 'src/utils/axios';
 
 import { FIREBASE_API } from 'src/config-global';
-// ----------------------------------------------------------------------
 
 export const firebaseApp = initializeApp(FIREBASE_API);
 
-// ______________________________________________________________________
-
-// this function is not used yet!!!!!!!!! (with love)
 export const isNewUser = (user: User): Boolean => {
   if (user.metadata.creationTime === user.metadata.lastSignInTime) return true;
   return false;
@@ -25,8 +21,9 @@ export const isRegistered = async (jwt: string): Promise<boolean> => {
           Authorization: `Bearer ${jwt}`,
         },
       });
-      const { user } = await res.data;
-      if (!user?.firstName || !user?.lastName) {
+      const { firstName, lastName } = await res.data.data;
+      console.log('first name: ', firstName, 'last name: ', lastName);
+      if (!firstName || !lastName) {
         return false;
       }
     } catch (error) {

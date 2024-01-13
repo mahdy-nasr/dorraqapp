@@ -6,13 +6,9 @@ import AuthModernLayout from 'src/layouts/auth/modern';
 
 import { SplashScreen } from 'src/components/loading-screen';
 
-// ----------------------------------------------------------------------
-
 // FIREBASE
 const FirebaseLoginPage = lazy(() => import('src/pages/auth/firebase/login'));
 const FirebaseRegisterPage = lazy(() => import('src/pages/auth/firebase/register'));
-
-// ----------------------------------------------------------------------
 
 const authFirebase = {
   element: (

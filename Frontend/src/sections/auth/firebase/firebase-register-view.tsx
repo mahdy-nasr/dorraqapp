@@ -20,8 +20,6 @@ import FormProvider, { RHFTextField } from 'src/components/hook-form';
 
 import AuthButton from './components/AuthButton';
 
-// ----------------------------------------------------------------------
-
 export default function FirebaseRegisterView() {
   const theme = useTheme();
   const {

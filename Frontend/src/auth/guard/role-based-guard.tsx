@@ -10,8 +10,6 @@ import { ForbiddenIllustration } from 'src/assets/illustrations';
 
 import { varBounce, MotionContainer } from 'src/components/animate';
 
-// ----------------------------------------------------------------------
-
 type RoleBasedGuardProp = {
   hasContent?: boolean;
   roles?: string[];

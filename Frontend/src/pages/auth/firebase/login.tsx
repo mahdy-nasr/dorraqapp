@@ -2,8 +2,6 @@ import { Helmet } from 'react-helmet-async';
 
 import { FirebaseLoginView } from 'src/sections/auth/firebase';
 
-// ----------------------------------------------------------------------
-
 export default function LoginPage() {
   return (
     <>

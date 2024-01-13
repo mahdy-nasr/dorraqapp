@@ -9,25 +9,28 @@ import {
   FacebookAuthProvider,
 } from 'firebase/auth';
 
-// import axios, { endpoints } from 'src/utils/axios';
+import axios, { endpoints } from 'src/utils/axios';
 
 import { AuthContext } from './auth-context';
 import { firebaseApp, isRegistered as isRegister } from './lib';
 import { AuthUserType, ActionMapType, AuthStateType } from '../../types';
-// ----------------------------------------------------------------------
 
 const AUTH = getAuth(firebaseApp);
 
+/*
+  - INITIAL_FIREBASE_AUTH: Represents the action type for initializing Firebase authentication.
+  - FULL_APP_AUTH: Represents the action type for full application authentication.
+*/
 enum Types {
-  INITIAL = 'INITIAL',
-  REGISTER = 'REGISTER',
+  INITIAL_FIREBASE_AUTH = 'INITIAL_FIREBASE_AUTH',
+  FULL_APP_AUTH = 'FULL_APP_AUTH',
 }
 
 type Payload = {
-  [Types.INITIAL]: {
-    user: AuthUserType;
+  [Types.INITIAL_FIREBASE_AUTH]: {
+    firebaseUser: AuthUserType;
   };
-  [Types.REGISTER]: {
+  [Types.FULL_APP_AUTH]: {
     user: AuthUserType;
   };
 };
@@ -40,13 +43,13 @@ const initialState: AuthStateType = {
 };
 
 const reducer = (state: AuthStateType, action: Action) => {
-  if (action.type === Types.INITIAL) {
+  if (action.type === Types.INITIAL_FIREBASE_AUTH) {
     return {
       loading: false,
-      user: action.payload.user,
+      user: action.payload.firebaseUser,
     };
   }
-  if (action.type === Types.REGISTER) {
+  if (action.type === Types.FULL_APP_AUTH) {
     return {
       ...state,
       user: action.payload.user,
@@ -55,17 +58,14 @@ const reducer = (state: AuthStateType, action: Action) => {
   return state;
 };
 
-// ----------------------------------------------------------------------
-
 type Props = {
   children: React.ReactNode;
 };
 
 export function AuthProvider({ children }: Props) {
   const [state, dispatch] = useReducer(reducer, initialState);
-
+  console.log(state);
   const initialize = useCallback(() => {
-    // signOut(AUTH);
     try {
       onAuthStateChanged(AUTH, async (user) => {
         if (user) {
@@ -73,9 +73,9 @@ export function AuthProvider({ children }: Props) {
             const accessToken = await user.getIdToken();
             const isRegistered = await isRegister(accessToken);
             dispatch({
-              type: Types.INITIAL,
+              type: Types.INITIAL_FIREBASE_AUTH,
               payload: {
-                user: {
+                firebaseUser: {
                   ...user,
                   isRegistered,
                   id: user.uid,
@@ -85,17 +85,17 @@ export function AuthProvider({ children }: Props) {
             });
           } else {
             dispatch({
-              type: Types.INITIAL,
+              type: Types.INITIAL_FIREBASE_AUTH,
               payload: {
-                user: null,
+                firebaseUser: null,
               },
             });
           }
         } else {
           dispatch({
-            type: Types.INITIAL,
+            type: Types.INITIAL_FIREBASE_AUTH,
             payload: {
-              user: null,
+              firebaseUser: null,
             },
           });
         }
@@ -103,9 +103,9 @@ export function AuthProvider({ children }: Props) {
     } catch (error) {
       console.error(error);
       dispatch({
-        type: Types.INITIAL,
+        type: Types.INITIAL_FIREBASE_AUTH,
         payload: {
-          user: null,
+          firebaseUser: null,
         },
       });
     }
@@ -147,25 +147,25 @@ export function AuthProvider({ children }: Props) {
       } else {
         const accessToken = state.user?.accessToken;
         console.table({ 'access token': accessToken, ...data });
-        // try {
-        //   const res = await axios.post(endpoints.auth.register, data, {
-        //     headers: {
-        //       Authorization: `Bearer ${accessToken}`,
-        //       'Content-Type': 'application/json',
-        //     },
-        //   });
-        //   const user = await res.data;
-        //   dispatch({
-        //     type: Types.REGISTER,
-        //     payload: {
-        //       user: {
-        //         ...user,
-        //       },
-        //     },
-        //   });
-        // } catch (error) {
-        //   console.log(error);
-        // }
+        try {
+          const res = await axios.post(endpoints.auth.register, data, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          const user = await res.data;
+          dispatch({
+            type: Types.FULL_APP_AUTH,
+            payload: {
+              user: {
+                ...user,
+              },
+            },
+          });
+        } catch (error) {
+          console.error(error);
+        }
       }
     },
     [state]
@@ -175,8 +175,6 @@ export function AuthProvider({ children }: Props) {
   const logout = useCallback(async () => {
     await signOut(AUTH);
   }, []);
-
-  // ----------------------------------------------------------------------
 
   const checkAuthenticated = state.user?.emailVerified ? 'authenticated' : 'unauthenticated';
 

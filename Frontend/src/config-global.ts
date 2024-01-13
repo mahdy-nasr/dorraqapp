@@ -1,8 +1,7 @@
 import { paths } from 'src/routes/paths';
 
 // API
-// ----------------------------------------------------------------------
-
+export const DORRAQ_APP_HOST_API = import.meta.env.VITE_DORRAQ_APP_HOST_API;
 export const HOST_API = import.meta.env.VITE_HOST_API;
 export const ASSETS_API = import.meta.env.VITE_ASSETS_API;
 
