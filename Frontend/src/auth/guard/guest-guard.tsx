@@ -7,8 +7,6 @@ import { SplashScreen } from 'src/components/loading-screen';
 
 import { useAuthContext } from '../hooks';
 
-// ----------------------------------------------------------------------
-
 type Props = {
   children: React.ReactNode;
 };
@@ -19,8 +17,6 @@ export default function GuestGuard({ children }: Props) {
   return <>{loading ? <SplashScreen /> : <Container>{children}</Container>}</>;
 }
 
-// ----------------------------------------------------------------------
-
 function Container({ children }: Props) {
   const router = useRouter();
 
@@ -28,13 +24,18 @@ function Container({ children }: Props) {
 
   const returnTo = searchParams.get('returnTo') || paths.dashboard.root;
 
-  const { authenticated } = useAuthContext();
+  const registerPath = paths.auth.firebase.register;
+
+  const { authenticated, isRegistered } = useAuthContext();
 
   const check = useCallback(() => {
-    if (authenticated) {
+    if (authenticated && isRegistered) {
       router.replace(returnTo);
     }
-  }, [authenticated, returnTo, router]);
+    if (authenticated && !isRegistered) {
+      router.replace(registerPath);
+    }
+  }, [authenticated, returnTo, router, isRegistered, registerPath]);
 
   useEffect(() => {
     check();

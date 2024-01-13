@@ -5,18 +5,17 @@ import Box, { BoxProps } from '@mui/material/Box';
 
 import { RouterLink } from 'src/routes/components';
 
-// ----------------------------------------------------------------------
-
 export interface LogoProps extends BoxProps {
   disabledLink?: boolean;
 }
 
 const Logo = forwardRef<HTMLDivElement, LogoProps>(
-  ({ disabledLink = false, sx }) => {
-    
+
+  ({ disabledLink = false, sx, ...other }, ref) => {
 
     const logo = (
       <Box
+        ref={ref}
         component="img"
         src="/logo/dorraq_logo.svg"
         sx={{ width: 48, height: 48, cursor: 'pointer', ...sx }}

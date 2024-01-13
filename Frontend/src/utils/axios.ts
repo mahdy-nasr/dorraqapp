@@ -1,10 +1,8 @@
 import axios, { AxiosRequestConfig } from 'axios';
 
-import { HOST_API } from 'src/config-global';
+import { DORRAQ_APP_HOST_API } from 'src/config-global';
 
-// ----------------------------------------------------------------------
-
-const axiosInstance = axios.create({ baseURL: HOST_API });
+const axiosInstance = axios.create({ baseURL: DORRAQ_APP_HOST_API });
 
 axiosInstance.interceptors.response.use(
   (res) => res,
@@ -12,8 +10,6 @@ axiosInstance.interceptors.response.use(
 );
 
 export default axiosInstance;
-
-// ----------------------------------------------------------------------
 
 export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
   const [url, config] = Array.isArray(args) ? args : [args];
@@ -23,31 +19,10 @@ export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
   return res.data;
 };
 
-// ----------------------------------------------------------------------
-
 export const endpoints = {
-  chat: '/api/chat',
-  kanban: '/api/kanban',
-  calendar: '/api/calendar',
   auth: {
-    me: '/api/auth/me',
-    login: '/api/auth/login',
-    register: '/api/auth/register',
-  },
-  mail: {
-    list: '/api/mail/list',
-    details: '/api/mail/details',
-    labels: '/api/mail/labels',
-  },
-  post: {
-    list: '/api/post/list',
-    details: '/api/post/details',
-    latest: '/api/post/latest',
-    search: '/api/post/search',
-  },
-  product: {
-    list: '/api/product/list',
-    details: '/api/product/details',
-    search: '/api/product/search',
+    me: '/users/me',
+    login: '/users/login',
+    register: '/users/continue-registration',
   },
 };

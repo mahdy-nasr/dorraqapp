@@ -1,7 +1,5 @@
 import { LogoutOptions, PopupLoginOptions, RedirectLoginOptions } from '@auth0/auth0-react';
 
-// ----------------------------------------------------------------------
-
 export type ActionMapType<M extends { [index: string]: any }> = {
   [Key in keyof M]: M[Key] extends undefined
     ? {
@@ -21,8 +19,6 @@ export type AuthStateType = {
   user: AuthUserType;
 };
 
-// ----------------------------------------------------------------------
-
 type CanRemove = {
   login?: (email: string, password: string) => Promise<void>;
   register?: (
@@ -33,8 +29,8 @@ type CanRemove = {
   ) => Promise<void>;
   //
   loginWithGoogle?: () => Promise<void>;
-  loginWithGithub?: () => Promise<void>;
-  loginWithTwitter?: () => Promise<void>;
+  loginWithFacebook?: () => Promise<void>;
+  loginWithMicrosoft?: () => Promise<void>;
   //
   loginWithPopup?: (options?: PopupLoginOptions) => Promise<void>;
   loginWithRedirect?: (options?: RedirectLoginOptions) => Promise<void>;
@@ -63,13 +59,12 @@ export type FirebaseContextType = CanRemove & {
   loading: boolean;
   authenticated: boolean;
   unauthenticated: boolean;
+  isRegistered: boolean;
   logout: () => Promise<void>;
   loginWithGoogle: () => Promise<void>;
-  loginWithGithub: () => Promise<void>;
-  loginWithTwitter: () => Promise<void>;
-  forgotPassword?: (email: string) => Promise<void>;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string, firstName: string, lastName: string) => Promise<void>;
+  loginWithFacebook: () => Promise<void>;
+  loginWithMicrosoft: () => Promise<void>;
+  register: (firstName: string, lastName: string) => Promise<void>;
 };
 
 export type AmplifyContextType = CanRemove & {
@@ -91,8 +86,6 @@ export type AmplifyContextType = CanRemove & {
   resendCodeRegister: (email: string) => Promise<void>;
   newPassword: (email: string, code: string, password: string) => Promise<void>;
 };
-
-// ----------------------------------------------------------------------
 
 export type Auth0ContextType = CanRemove & {
   user: AuthUserType;

@@ -7,13 +7,13 @@ import { SplashScreen } from 'src/components/loading-screen';
 
 import { useAuthContext } from '../hooks';
 
-// ----------------------------------------------------------------------
-
 const loginPaths: Record<string, string> = {
-  jwt: paths.auth.jwt.login,
+  firebase: paths.auth.firebase.login,
 };
 
-// ----------------------------------------------------------------------
+const registerPaths: Record<string, string> = {
+  firebase: paths.auth.firebase.register,
+};
 
 type Props = {
   children: React.ReactNode;
@@ -25,12 +25,10 @@ export default function AuthGuard({ children }: Props) {
   return <>{loading ? <SplashScreen /> : <Container>{children}</Container>}</>;
 }
 
-// ----------------------------------------------------------------------
-
 function Container({ children }: Props) {
   const router = useRouter();
 
-  const { authenticated, method } = useAuthContext();
+  const { authenticated, method, isRegistered } = useAuthContext();
 
   const [checked, setChecked] = useState(false);
 
@@ -45,10 +43,20 @@ function Container({ children }: Props) {
       const href = `${loginPath}?${searchParams}`;
 
       router.replace(href);
+    } else if (!isRegistered) {
+      const searchParams = new URLSearchParams({
+        returnTo: window.location.pathname,
+      }).toString();
+
+      const registerPath = registerPaths[method];
+
+      const href = `${registerPath}?${searchParams}`;
+
+      router.replace(href);
     } else {
       setChecked(true);
     }
-  }, [authenticated, method, router]);
+  }, [authenticated, method, router, isRegistered]);
 
   useEffect(() => {
     check();

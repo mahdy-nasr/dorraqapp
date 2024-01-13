@@ -3,11 +3,7 @@ import { Outlet } from 'react-router-dom';
 
 import CompactLayout from 'src/layouts/compact';
 
-// ----------------------------------------------------------------------
-
 const Page404 = lazy(() => import('src/pages/404'));
-
-// ----------------------------------------------------------------------
 
 export const mainRoutes = [
   {

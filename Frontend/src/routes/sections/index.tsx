@@ -6,8 +6,6 @@ import { mainRoutes } from './main';
 import { authRoutes } from './auth';
 import { dashboardRoutes } from './dashboard';
 
-// ----------------------------------------------------------------------
-
 export default function Router() {
   return useRoutes([
     {
