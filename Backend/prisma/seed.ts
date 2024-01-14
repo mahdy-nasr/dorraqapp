@@ -23,6 +23,7 @@ const seedUsers = async (): Promise<void> => {
       enabled: true,
       gender: null,
       role: 'student',
+      firebaseUid: faker.datatype.uuid(),
     }),
     3
   );

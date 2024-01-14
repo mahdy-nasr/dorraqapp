@@ -11,10 +11,9 @@ const storage: StorageEngine = multer.diskStorage({
     cb(null, 'Upload/Images');
   },
   filename: (req, file: File, cb) => {
-    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
     const fileExtension = path.extname(file.originalname);
-    cb(null, file.fieldname + '-' + uniqueSuffix + fileExtension);
+    cb(null, `${file.fieldname}-${uniqueSuffix}${fileExtension}`);
   },
 });
 

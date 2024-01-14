@@ -2,6 +2,7 @@ import { type Response, type Request } from 'express';
 import { type User } from '@prisma/client';
 import { HttpStatusCode as Status } from 'axios';
 import UserService from './users.service';
+import { type UpdateUserInput } from './users.service';
 import { type CreateUserRequestDto } from './dto/user.dto';
 import { type UpdateUserRequestDto } from './dto/user-settings.dto';
 import Api from '@/lib/api';
@@ -48,39 +49,43 @@ export default class UserController extends Api {
     req: Request<unknown, unknown, UpdateUserRequestDto>,
     res: Response
   ) => {
-    try {
-      // Check if req.file is defined before accessing its filename property
-      const imageFilePath: string | undefined = req.file?.filename
-        ? encodeURIComponent(req.file.filename)
-        : undefined;
-      if (!imageFilePath) {
-        throw new HttpBadRequestError('No image provided');
-      }
-      const userId = req.authUser?.getUser()?.id;
-      if (!userId) {
-        throw new HttpBadRequestError('User ID not found');
-      }
-      const data = {
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        country: req.body.country,
-        city: req.body.city,
-        university: req.body.university,
-        education: req.body.education,
-        phone: req.body.phone,
-        language: req.body.language,
-        gender: req.body.gender,
-        profilePicture: `http://localhost:3000/image/${imageFilePath}`,
-      };
-      const updatedUser = await this.userService.updateUser({
-        id: userId,
-        data,
-      });
-      return this.send(res, updatedUser, Status.Ok);
-    } catch (error) {
-      throw new HttpInternalServerError(
-        (error as Error)?.message ?? 'Error while updating user information'
-      );
+    const userId = req.authUser?.getUser()?.id;
+    if (!userId) {
+      throw new HttpBadRequestError('User ID not found');
     }
+    const data: Partial<UpdateUserInput['data']> = {};
+    // Mapping request body fields to data object
+    const fieldsToUpdate: Array<keyof UpdateUserRequestDto> = [
+      'firstName',
+      'lastName',
+      'country',
+      'city',
+      'university',
+      'education',
+      'phone',
+      'language',
+      'gender',
+      'profilePicture',
+    ];
+    fieldsToUpdate.forEach((field) => {
+      if (req.body[field]) {
+        data[field] = req.body[field];
+      }
+    });
+    // Handle profile picture
+    const imageFilePath: string | undefined = req.file?.filename
+      ? encodeURIComponent(req.file.filename)
+      : undefined;
+
+    if (imageFilePath) {
+      data.profilePicture = `http://localhost:3000/image/${imageFilePath}`;
+    }
+
+    const updatedUser = await this.userService.updateUser({
+      id: userId,
+      data,
+    });
+
+    this.send(res, updatedUser, Status.Ok);
   };
 }

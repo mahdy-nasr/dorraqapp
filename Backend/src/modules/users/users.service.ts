@@ -1,6 +1,6 @@
 import { type User } from '@prisma/client';
+import { type UpdateUserRequestDto } from './dto/user-settings.dto';
 import prisma from '@/lib/prisma';
-
 interface CreateUserInput {
   firebaseUid: string;
   firstName: string;
@@ -9,20 +9,9 @@ interface CreateUserInput {
   profilePicture: string | undefined;
   phone: string | undefined;
 }
-interface UpdateUserInfo {
+export interface UpdateUserInput {
   id: string;
-  data: {
-    firstName: string;
-    lastName: string;
-    country: string;
-    city: string;
-    university: string;
-    education: string;
-    phone: string;
-    language: string;
-    profilePicture: string;
-    gender: string;
-  };
+  data: Partial<UpdateUserRequestDto>;
 }
 export default class UserService {
   public async createUser(userData: CreateUserInput): Promise<User> {
@@ -53,23 +42,12 @@ export default class UserService {
     return user;
   }
 
-  public async updateUser(userData: UpdateUserInfo): Promise<User> {
+  public async updateUser(userData: UpdateUserInput): Promise<User> {
     const { id, data } = userData;
 
     const updatedUser = await prisma.user.update({
       where: { id },
-      data: {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        country: data.country,
-        city: data.city,
-        university: data.university,
-        education: data.education,
-        phone: data.phone,
-        language: data.language,
-        profilePicture: data.profilePicture,
-        gender: data.gender,
-      },
+      data,
     });
     return updatedUser;
   }
