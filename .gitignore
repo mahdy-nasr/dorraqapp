@@ -46,3 +46,6 @@ node_modules/
 
 # OS hidden files
 *.DS_Store
+
+# Upload folder
+Upload/
