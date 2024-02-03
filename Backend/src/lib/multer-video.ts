@@ -8,7 +8,7 @@ interface File {
 
 const storage: StorageEngine = multer.diskStorage({
   destination: (req, file: File, cb) => {
-    cb(null, 'Upload/Images');
+    cb(null, 'Upload/Videos');
   },
   filename: (req, file: File, cb) => {
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
@@ -17,4 +17,4 @@ const storage: StorageEngine = multer.diskStorage({
   },
 });
 
-export const upload = multer({ storage });
+export const uploadVideo = multer({ storage });

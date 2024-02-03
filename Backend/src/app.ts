@@ -1,4 +1,5 @@
 import fs from 'fs';
+import * as path from 'path';
 import cors from 'cors';
 import nocache from 'nocache';
 import express from 'express';
@@ -49,6 +50,7 @@ class App {
     } = appConfig;
     this.express.use(`/api/${version}`, routes);
     this.express.use('/image', express.static('Upload/Images'));
+    this.express.use('/video', express.static('Upload/Videos'));
   }
 
   private setErrorHandler(): void {
@@ -61,16 +63,32 @@ class App {
 
   private async createUploadDirectory(): Promise<void> {
     console.log('Creating upload directory...');
-    const uploadDirectory = 'Upload/Images';
+    const uploadDirectory = 'Upload';
+    const imagesDirectory = path.join(uploadDirectory, 'Images');
+    const videosDirectory = path.join(uploadDirectory, 'Videos');
+
     try {
-      // Check if the directory exists
+      // Check if the main upload directory exists
       if (!fs.existsSync(uploadDirectory)) {
         // If not, create it
         fs.mkdirSync(uploadDirectory, { recursive: true });
         console.log(`${uploadDirectory} directory created.`);
       }
+      // Check if the images directory exists
+      if (!fs.existsSync(imagesDirectory)) {
+        // If not, create it
+        fs.mkdirSync(imagesDirectory, { recursive: true });
+        console.log(`${imagesDirectory} directory created.`);
+      }
+
+      // Check if the videos directory exists
+      if (!fs.existsSync(videosDirectory)) {
+        // If not, create it
+        fs.mkdirSync(videosDirectory, { recursive: true });
+        console.log(`${videosDirectory} directory created.`);
+      }
     } catch (error) {
-      console.error(`Error creating ${uploadDirectory} directory:`, error);
+      console.error('Error creating upload directories:', error);
     }
   }
 

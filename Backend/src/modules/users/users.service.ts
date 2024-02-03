@@ -1,6 +1,16 @@
-import { type User } from '@prisma/client';
+import {
+  type User,
+  type Course,
+  type Lessons,
+  type Video,
+} from '@prisma/client';
 import { type UpdateUserRequestDto } from './dto/user-settings.dto';
+import { type UpdateCourseRequestDto } from './dto/update-course.dto';
+import { type UpdateLessonRequestDto } from './dto/update-lesson.dto';
+import { HttpBadRequestError } from '@/lib/errors';
+
 import prisma from '@/lib/prisma';
+// User
 interface CreateUserInput {
   firebaseUid: string;
   firstName: string;
@@ -13,7 +23,44 @@ export interface UpdateUserInput {
   id: string;
   data: Partial<UpdateUserRequestDto>;
 }
+
+// Course
+export interface UpdateCourseInput {
+  id: string;
+  instructorId: string;
+  data: Partial<UpdateCourseRequestDto>;
+}
+export interface CreateCourseInput {
+  fullName: string;
+  shortName: string;
+  description: string;
+  coverPicture: string;
+  level: string;
+  slug: string;
+  instructorId: string; // from token
+}
+
+// lesson
+export interface CreateLossonInput {
+  instructorId: string;
+  courseId: string;
+  lessonTitle: string;
+  lessonNumber: number;
+  description: string;
+  tag: string;
+}
+
+export interface UpdateLessonInput {
+  id: string;
+  data: Partial<UpdateLessonRequestDto>;
+}
+
+export interface UploadLessonVideo {
+  lessonsId: string;
+  videoLink: string;
+}
 export default class UserService {
+  // User
   public async createUser(userData: CreateUserInput): Promise<User> {
     const user = await prisma.user.create({
       data: {
@@ -50,5 +97,162 @@ export default class UserService {
       data,
     });
     return updatedUser;
+  }
+
+  /* Course */
+  // get all courses
+  public async getCoursesByTeacherId(instructorId: string): Promise<Course[]> {
+    const courses = await prisma.course.findMany({
+      where: { instructorId },
+    });
+    return courses;
+  }
+
+  // get one course
+  public async getCourseById(id: string) {
+    const course = await prisma.course.findUnique({
+      where: { id },
+    });
+    return course;
+  }
+
+  // delete course By courseId
+  public async deleteCourseById(id: string): Promise<void> {
+    await prisma.course.delete({
+      where: { id },
+    });
+  }
+
+  // update course
+  public async updateCourse(
+    updateCourseData: UpdateCourseInput
+  ): Promise<Course> {
+    const { id, instructorId, data } = updateCourseData;
+
+    const updatedCourse = await prisma.course.update({
+      where: { id },
+      data: {
+        ...data,
+        instructor: {
+          connect: {
+            id: instructorId,
+          },
+        },
+      },
+    });
+    return updatedCourse;
+  }
+
+  public async createCourse(courseData: CreateCourseInput): Promise<Course> {
+    const course = await prisma.course.create({
+      data: {
+        fullName: courseData.fullName,
+        shortName: courseData.shortName,
+        description: courseData.description,
+        coverPicture: courseData.coverPicture,
+        level: courseData.level,
+        slug: courseData.slug,
+        instructor: {
+          connect: {
+            id: courseData.instructorId,
+          },
+        },
+      },
+    });
+    return course;
+  }
+
+  // lesson
+  // get all lesson
+  public async getAllLessonsByCourseId(courseId: string): Promise<Lessons[]> {
+    const courses = await prisma.lessons.findMany({
+      where: { courseId },
+    });
+    return courses;
+  }
+
+  // get one course
+  public async getLessonById(id: string) {
+    const lesson = await prisma.lessons.findUnique({
+      where: { id },
+    });
+    return lesson;
+  }
+
+  // create Lesson
+  public async createLesson(lessonData: CreateLossonInput): Promise<Lessons> {
+    const {
+      courseId,
+      instructorId,
+      lessonTitle,
+      lessonNumber,
+      description,
+      tag,
+    } = lessonData;
+    // Ensure that the teacher (user) is the instructor of the course
+    const course = await prisma.course.findUnique({
+      where: { id: courseId },
+      include: { instructor: true }, // Include the instructor information
+    });
+
+    if (!course || course.instructorId !== instructorId) {
+      // The user is not the instructor of the course
+      throw new HttpBadRequestError('User is not the instructor of the course');
+    }
+
+    const lesson = await prisma.lessons.create({
+      data: {
+        lessonTitle,
+        lessonNumber,
+        description,
+        tag,
+        course: {
+          connect: {
+            id: courseId,
+          },
+        },
+      },
+    });
+
+    return lesson;
+  }
+
+  // delete one lesson
+  public async deleteLessonByLessonId(id: string): Promise<void> {
+    await prisma.lessons.delete({
+      where: { id },
+    });
+  }
+
+  //  update lesson
+  public async updateLesson(
+    updateLessonData: UpdateLessonInput
+  ): Promise<Lessons> {
+    const { id, data } = updateLessonData;
+
+    const lesson = await prisma.lessons.update({
+      where: { id },
+      data,
+    });
+    return lesson;
+  }
+
+  // Uploads
+  // create Lesson
+  public async addVideo(videoData: UploadLessonVideo): Promise<Video> {
+    const { lessonsId, videoLink } = videoData;
+    // Ensure that the teacher (user) is the instructor of the course
+    const lesson = await prisma.video.create({
+      data: {
+        videoLink,
+        lesson: {
+          connect: {
+            id: lessonsId,
+          },
+        },
+      },
+    });
+
+    return lesson;
   }
 }

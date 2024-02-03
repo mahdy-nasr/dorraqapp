@@ -1,9 +1,11 @@
 import { Router } from 'express';
 import UserController from './users.controller';
 import { CreateUserRequestDto } from './dto/user.dto';
+import { UserRole } from './users-types';
+import { uploadVideo } from '@/lib/multer-video';
 import { RequestTypeValidator } from '@/middlewares/request-validator';
 import { AuthGuard } from '@/lib/authentication/auth.guard';
-import { upload } from '@/lib/multer';
+import { uploadImage } from '@/lib/multer-image';
 const users: Router = Router();
 const userController = new UserController();
 
@@ -65,7 +67,76 @@ users.get('/login', AuthGuard(), userController.login);
 users.put(
   '/settings',
   AuthGuard(),
-  upload.single('image'),
-  userController.UpdateUserInfo
+  uploadImage.single('image'),
+  userController.updateUserInfo
 );
+
+// dashboard instructor api
+// courses
+users.get(
+  '/my-courses',
+  AuthGuard(UserRole.TEACHER),
+  userController.getCourses
+);
+
+users.post(
+  '/create-course',
+  AuthGuard(UserRole.TEACHER),
+  uploadImage.single('image'),
+  userController.createCourse
+);
+
+users.delete(
+  '/delete-course',
+  AuthGuard(UserRole.TEACHER),
+  userController.deleteCourse
+);
+
+users.put(
+  '/update-course/:id',
+  AuthGuard(UserRole.TEACHER),
+  uploadImage.single('image'),
+  userController.updateCourse
+);
+
+// lessons
+users.get(
+  '/my-lessons',
+  AuthGuard(UserRole.TEACHER),
+  userController.getLessons
+);
+
+users.post(
+  '/create-lesson',
+  AuthGuard(UserRole.TEACHER),
+  userController.createLesson
+);
+
+users.delete(
+  '/delete-lesson',
+  // AuthGuard(UserRole.TEACHER),
+  userController.deleteLesson
+);
+
+users.put(
+  '/update-lesson/:id',
+  AuthGuard(UserRole.TEACHER),
+  uploadImage.single('image'),
+  userController.updateLesson
+);
+
+// Upload lesson data
+users.post(
+  '/upload-video',
+  uploadVideo.single('video'),
+  // AuthGuard(UserRole.TEACHER),
+  userController.createLesson
+);
+
+// users.post('/review', AuthGuard(UserRole.STUDENT), userController.addReview);
+// users.post('/my-students', AuthGuard(UserRole.TEACHER), userController.getStudents);
+// progress
+// feedback questions (per class)
+// Question banks
+
 export default users;

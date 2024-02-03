@@ -1,32 +1,167 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+  // This is your Prisma schema file,
+  // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-generator client {
-  provider = "prisma-client-js"
-}
+  generator client {
+    provider = "prisma-client-js"
+  }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+  datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+  }
 
-model User  {
-  @@map("users")
-  id String @id @db.Uuid @default(uuid())
-  firebaseUid  String  @unique @db.VarChar(255)
-  email  String  @unique @db.VarChar(255)
-  firstName  String @db.VarChar(255)
-  lastName  String @db.VarChar(255)
-  role String @default("student") @db.VarChar(100)
-  phone String? @db.VarChar(30)
-  profilePicture String? @db.VarChar(255)
-  country String? @db.VarChar(100)
-  city String? @db.VarChar(100)
-  university String? @db.VarChar(100)
-  education String? @db.VarChar(100)
-  language String @default("arabic") @db.VarChar(100)
-  gender String? @db.VarChar(10)
-  createdAt DateTime @default(now()) @db.Timestamp(6)
-  updatedAt DateTime @updatedAt @db.Timestamp(6)
-  enabled Boolean @default(true) @db.Boolean
-}
+  model User  {
+    @@map("users")
+    id String @id @db.Uuid @default(uuid())
+    firebaseUid  String  @unique @db.VarChar(255)
+    email  String  @unique @db.VarChar(255)
+    firstName  String @db.VarChar(255)
+    lastName  String @db.VarChar(255)
+    role String @default("student") @db.VarChar(100)
+    phone String? @db.VarChar(30)
+    profilePicture String? @db.VarChar(255)
+    country String? @db.VarChar(100)
+    city String? @db.VarChar(100)
+    university String? @db.VarChar(100)
+    education String? @db.VarChar(100)
+    language String @default("arabic") @db.VarChar(100)
+    gender String? @db.VarChar(10)
+    createdAt DateTime @default(now()) @db.Timestamp(6)
+    updatedAt DateTime @updatedAt @db.Timestamp(6)
+    enabled Boolean @default(true) @db.Boolean
+    studentEnrollment Enrollment[] // one to many
+    instructorCourse Course[]
+    courseReview CourseReview[] 
+    studentAnswer StudentAnswer[]
+  }
+    model Enrollment {
+    @@map("enrollment")
+    id          String    @id @db.Uuid @default(uuid())
+    createdAt DateTime @default(now()) @db.Timestamp(6)
+    lessonNumber String   @db.VarChar(100)
+    description String    @db.VarChar(255)
+    courseId    String    @db.Uuid
+    tag String @db.VarChar(255)
+    studentId    String    @db.Uuid @unique
+    student     User     @relation(fields: [studentId], references: [id]) // many
+    classId    String    @db.Uuid @unique
+    class Class @relation(fields: [classId], references: [id]) // many
+  }
+  model Class {
+    @@map("class")
+    id          String    @id @db.Uuid @default(uuid())
+    class_schedule       String    @db.VarChar(100)
+    live_start_time    String    @db.VarChar(100)
+    live_end_time String @db.Text
+    class_is_live String @db.VarChar(255)
+    start_date DateTime @default(now()) @db.Timestamp(6)
+    end_date DateTime @updatedAt @db.Timestamp(6)
+    createdAt String @db.VarChar(15)
+    length Int 
+    slug String 
+    classEnrollment Enrollment[] // one to many
+    courseId    String    @db.Uuid @unique
+    class Course @relation(fields: [courseId], references: [id]) // many
+  }
+  model Course {
+    @@map("course")
+    id          String    @id @db.Uuid @default(uuid())
+    fullName       String    @db.VarChar(100)
+    shortName    String    @db.VarChar(100)
+    description String @db.Text
+    coverPicture String @db.VarChar(255)
+    createdAt DateTime @default(now()) @db.Timestamp(6)
+    updatedAt DateTime @updatedAt @db.Timestamp(6)
+    level String @db.VarChar(15)
+    length Int? 
+    slug String 
+    class     Class[] // one to many
+    lessons     Lessons[] // one to many
+    courseReview CourseReview[]
+    instructorId    String    @db.Uuid
+    instructor User    @relation(fields: [instructorId], references: [id]) // many
+  }
+
+  model CourseReview {
+    @@map("courseReview")
+    id  String    @id @db.Uuid @default(uuid())
+    rate Float
+    reviewText String @db.Text()
+    studentId    String    @db.Uuid @unique
+    student User    @relation(fields: [studentId], references: [id]) 
+    courseId    String    @db.Uuid @unique
+    course Course    @relation(fields: [courseId], references: [id]) 
+
+  }
+
+  model Lessons {
+    @@map("lessons")
+    id          String    @id @db.Uuid @default(uuid())
+    lessonTitle String    @db.VarChar(100)
+    lessonNumber Int
+    description String    @db.VarChar(255)
+    tag String @db.VarChar(255)
+    courseId    String    @db.Uuid 
+    course Course    @relation(fields: [courseId], references: [id], onDelete: Cascade) // many
+    blog Blog? @relation("blog") //one to one
+    video Video? @relation("video")
+    quiz Quiz? @relation("quiz")
+  }
+
+  model Blog {
+    @@map("blog")
+    id String @id @db.Uuid @default(uuid())
+    blogBody String @db.Text
+    lessonsId String @db.Uuid @unique
+    lesson Lessons @relation("blog",fields: [lessonsId], references: [id])
+
+  }
+  model Video{
+    @@map("video")
+    id String @id @db.Uuid @default(uuid())
+    videoLink   String    @db.VarChar(255)
+    lessonsId String @db.Uuid @unique
+    lesson Lessons @relation("video",fields: [lessonsId], references: [id])
+  }
+  model Quiz{
+    @@map("quiz")
+    id String @id @db.Uuid @default(uuid())
+    lessonsId String @db.Uuid @unique
+    Question     Question[]
+    lesson Lessons @relation("quiz",fields: [lessonsId], references: [id])
+  }
+  model Question{
+    @@map("question")
+    id String @id @db.Uuid @default(uuid())
+    questionBody String @db.Text
+    questionPoints Int
+    quizID String @db.Uuid @unique
+    Option     Option[]
+    quiz Quiz @relation(fields: [quizID], references: [id])
+    studentAnswer StudentAnswer[]
+  }
+  model Option{
+    @@map("option")
+    id String @id @db.Uuid @default(uuid())
+    isCorrect Boolean @db.Boolean()
+    optionBody String @db.Text()
+    questionID String @db.Uuid @unique
+    question Question @relation(fields: [questionID], references: [id])
+    studentAnswer StudentAnswer[]
+  }
+  model StudentAnswer{
+    @@map("studentAnswer")
+    id String @id @db.Uuid @default(uuid())
+    studentId String @db.Uuid @unique
+    student User @relation(fields: [studentId], references: [id])
+    optionId String @db.Uuid @unique
+    option Option @relation(fields: [optionId], references: [id])
+    questionId String @db.Uuid @unique
+    question Question @relation(fields: [questionId], references: [id])
+  }
+
+
+
+
+
+
