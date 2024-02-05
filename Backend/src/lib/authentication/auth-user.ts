@@ -13,7 +13,6 @@ export class AuthUser {
   public async initializeWithJWT(jwt: string) {
     try {
       this.decodedJWT = await firebase.auth().verifyIdToken(jwt);
-      console.log(this.decodedJWT);
       this.user = await this.userService.findUserById(this.decodedJWT.uid);
     } catch (_) {
       logger.info('Invalid JWT token Or User not found');

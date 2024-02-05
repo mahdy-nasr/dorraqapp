@@ -135,7 +135,7 @@
     id String @id @db.Uuid @default(uuid())
     questionBody String @db.Text
     questionPoints Int
-    quizID String @db.Uuid @unique
+    quizID String @db.Uuid
     Option     Option[]
     quiz Quiz @relation(fields: [quizID], references: [id])
     studentAnswer StudentAnswer[]
@@ -145,7 +145,7 @@
     id String @id @db.Uuid @default(uuid())
     isCorrect Boolean @db.Boolean()
     optionBody String @db.Text()
-    questionID String @db.Uuid @unique
+    questionID String @db.Uuid 
     question Question @relation(fields: [questionID], references: [id])
     studentAnswer StudentAnswer[]
   }

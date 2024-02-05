@@ -114,7 +114,7 @@ users.post(
 
 users.delete(
   '/delete-lesson',
-  // AuthGuard(UserRole.TEACHER),
+  AuthGuard(UserRole.TEACHER),
   userController.deleteLesson
 );
 
@@ -129,10 +129,24 @@ users.put(
 users.post(
   '/upload-video',
   uploadVideo.single('video'),
-  // AuthGuard(UserRole.TEACHER),
-  userController.createLesson
+  AuthGuard(UserRole.TEACHER),
+  userController.addVideo
 );
 
+users.post('/upload-blog', AuthGuard(UserRole.TEACHER), userController.addBlog);
+
+users.post(
+  '/upload-quiz',
+  AuthGuard(UserRole.TEACHER),
+  userController.createQuizWithQuestionsAndOptions
+);
+
+// get lesson data
+// video for lesson by lesson Id
+// blog ==
+// quiz by lessin Id and quiz info ?
+
+// delete video - blog - quiz by Id
 // users.post('/review', AuthGuard(UserRole.STUDENT), userController.addReview);
 // users.post('/my-students', AuthGuard(UserRole.TEACHER), userController.getStudents);
 // progress

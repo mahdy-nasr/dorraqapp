@@ -3,6 +3,8 @@ import {
   type Course,
   type Lessons,
   type Video,
+  type Blog,
+  type Quiz,
 } from '@prisma/client';
 import { type UpdateUserRequestDto } from './dto/user-settings.dto';
 import { type UpdateCourseRequestDto } from './dto/update-course.dto';
@@ -58,6 +60,22 @@ export interface UpdateLessonInput {
 export interface UploadLessonVideo {
   lessonsId: string;
   videoLink: string;
+}
+export interface UploadLessonBlog {
+  lessonsId: string;
+  blogBody: string;
+}
+
+export interface CreateQuizInput {
+  lessonId: string;
+  questions: Array<{
+    questionBody: string;
+    questionPoints: number;
+    options: Array<{
+      optionBody: string;
+      isCorrect: boolean;
+    }>;
+  }>;
 }
 export default class UserService {
   // User
@@ -238,11 +256,11 @@ export default class UserService {
   }
 
   // Uploads
-  // create Lesson
+  // Video
   public async addVideo(videoData: UploadLessonVideo): Promise<Video> {
     const { lessonsId, videoLink } = videoData;
     // Ensure that the teacher (user) is the instructor of the course
-    const lesson = await prisma.video.create({
+    const video = await prisma.video.create({
       data: {
         videoLink,
         lesson: {
@@ -253,6 +271,73 @@ export default class UserService {
       },
     });
 
-    return lesson;
+    return video;
+  }
+
+  // Blog
+  public async addBlog(blogData: UploadLessonBlog): Promise<Blog> {
+    const { lessonsId, blogBody } = blogData;
+    const blog = await prisma.blog.create({
+      data: {
+        blogBody,
+        lesson: {
+          connect: {
+            id: lessonsId,
+          },
+        },
+      },
+    });
+
+    return blog;
+  }
+
+  // Quiz && question && options
+  public async createQuizWithQuestionsAndOptions(
+    quizData: CreateQuizInput
+  ): Promise<Quiz> {
+    const { lessonId, questions } = quizData;
+
+    const quiz = await prisma.quiz.create({
+      data: {
+        lesson: {
+          connect: {
+            id: lessonId,
+          },
+        },
+      },
+    });
+
+    // Create each question and its options
+    for (const questionData of questions) {
+      const { questionBody, questionPoints, options } = questionData;
+
+      const question = await prisma.question.create({
+        data: {
+          questionBody,
+          questionPoints,
+          quiz: {
+            connect: {
+              id: quiz.id,
+            },
+          },
+        },
+      });
+
+      // Create options for the question
+      for (const optionData of options) {
+        await prisma.option.create({
+          data: {
+            ...optionData,
+            question: {
+              connect: {
+                id: question.id,
+              },
+            },
+          },
+        });
+      }
+    }
+
+    return quiz;
   }
 }

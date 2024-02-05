@@ -4,6 +4,8 @@ import {
   type Course,
   type Lessons,
   type Video,
+  type Blog,
+  type Quiz,
 } from '@prisma/client';
 import { HttpStatusCode as Status } from 'axios';
 import UserService from './users.service';
@@ -14,6 +16,8 @@ import {
   type CreateLossonInput,
   type UpdateLessonInput,
   type UploadLessonVideo,
+  type UploadLessonBlog,
+  type CreateQuizInput,
 } from './users.service';
 import { type CreateUserRequestDto } from './dto/user.dto';
 import { type UpdateUserRequestDto } from './dto/user-settings.dto';
@@ -123,7 +127,7 @@ export default class UserController extends Api {
     res: Response<Course>
   ) => {
     // const instructorId = req.authUser?.getUser()?.id;
-    const instructorId = '4b8e9bfd-6033-4f36-8e49-4f9b29bddcd4';
+    const instructorId = '1077f61f-aa8c-4131-9917-c93f290587d2';
     // if (!instructorId) {
     //   throw new HttpBadRequestError('Instructor ID not found');
     // }
@@ -221,11 +225,11 @@ export default class UserController extends Api {
     req: Request<unknown, unknown, CreateLossonInput>,
     res: Response<Lessons>
   ) => {
-    const instructorId = req.authUser?.getUser()?.id;
-    if (!instructorId) {
-      throw new HttpBadRequestError('User ID not found');
-    }
-    // const instructorId = '4b8e9bfd-6033-4f36-8e49-4f9b29bddcd4';
+    // const instructorId = req.authUser?.getUser()?.id;
+    // if (!instructorId) {
+    //   throw new HttpBadRequestError('User ID not found');
+    // }
+    const instructorId = '1077f61f-aa8c-4131-9917-c93f290587d2';
     const lessonData: CreateLossonInput = {
       instructorId,
       courseId: req.body.courseId,
@@ -316,5 +320,43 @@ export default class UserController extends Api {
     const video = await this.userService.addVideo(videoData);
     console.log(video);
     this.send(res, video, Status.Ok);
+  };
+
+  // Blog
+  public addBlog = async (
+    req: Request<unknown, unknown, UploadLessonBlog>,
+    res: Response<Blog>
+  ) => {
+    const lessonsId = req.body.lessonsId;
+    const blogBody = req.body.blogBody;
+    const blogData: UploadLessonBlog = {
+      lessonsId,
+      blogBody,
+    };
+
+    const blog = await this.userService.addBlog(blogData);
+    this.send(res, blog, Status.Ok);
+  };
+
+  // Quiz
+  public createQuizWithQuestionsAndOptions = async (
+    req: Request<unknown, unknown, CreateQuizInput>,
+    res: Response<Quiz>
+  ) => {
+    try {
+      const lessonId = req.body.lessonId;
+      const questions = req.body.questions;
+      const quizData: CreateQuizInput = {
+        lessonId,
+        questions,
+      };
+      const quiz = await this.userService.createQuizWithQuestionsAndOptions(
+        quizData
+      );
+      this.send(res, quiz, Status.Created);
+    } catch (error) {
+      console.error(error);
+      throw new HttpInternalServerError('Error while creating quiz');
+    }
   };
 }
