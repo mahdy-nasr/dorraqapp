@@ -5,6 +5,7 @@ import {
   type Video,
   type Blog,
   type Quiz,
+  type Enrollment,
 } from '@prisma/client';
 import { type UpdateUserRequestDto } from './dto/user-settings.dto';
 import { type UpdateCourseRequestDto } from './dto/update-course.dto';
@@ -76,6 +77,22 @@ export interface CreateQuizInput {
       isCorrect: boolean;
     }>;
   }>;
+}
+
+export interface CreateEnrollmentInput {
+  studentId: string;
+  classId: string;
+}
+
+export interface getVideoInput {
+  videoId: string;
+  studentId: string;
+  classId: string;
+}
+export interface getBlogInput {
+  blogId: string;
+  studentId: string;
+  classId: string;
 }
 export default class UserService {
   // User
@@ -189,7 +206,7 @@ export default class UserService {
     return courses;
   }
 
-  // get one course
+  // get one lesson
   public async getLessonById(id: string) {
     const lesson = await prisma.lessons.findUnique({
       where: { id },
@@ -255,7 +272,7 @@ export default class UserService {
     return lesson;
   }
 
-  // Uploads
+  // Uploads lesson data
   // Video
   public async addVideo(videoData: UploadLessonVideo): Promise<Video> {
     const { lessonsId, videoLink } = videoData;
@@ -339,5 +356,119 @@ export default class UserService {
     }
 
     return quiz;
+  }
+
+  // get lesson data
+  // get video by lesson Id
+  public async getVideoById(videoData: getVideoInput) {
+    const { studentId, classId, videoId } = videoData;
+    const existingEnrollment = await prisma.enrollment.findFirst({
+      where: {
+        studentId,
+        classId,
+      },
+    });
+
+    if (!existingEnrollment) {
+      throw new HttpBadRequestError('User is not enrolled in the class');
+    }
+    const video = await prisma.video.findUnique({
+      where: { id: videoId },
+    });
+    return video;
+  }
+
+  // get blog by Id
+  public async getBlogById(blogData: getBlogInput) {
+    const { studentId, classId, blogId } = blogData;
+    const existingEnrollment = await prisma.enrollment.findFirst({
+      where: {
+        studentId,
+        classId,
+      },
+    });
+
+    if (!existingEnrollment) {
+      throw new HttpBadRequestError('User is not enrolled in the class');
+    }
+    const video = await prisma.blog.findUnique({
+      where: { id: blogId },
+    });
+    return video;
+  }
+
+  // get questions by quiz Id
+  public async getQuestionsByQuizId(quizId: string) {
+    // Find the quiz by its id
+    const quiz = await prisma.quiz.findUnique({
+      where: { id: quizId },
+      include: {
+        question: true, // Include all associated questions
+      },
+    });
+
+    // Check if the quiz is not found
+    if (!quiz) {
+      throw new HttpBadRequestError('Quiz not found');
+    }
+
+    // Return the questions associated with the quiz
+    return quiz.question;
+  }
+
+  // delete lesson data
+
+  // enroll to calss_room
+  public async enrollInClass(
+    enrollData: CreateEnrollmentInput
+  ): Promise<Enrollment> {
+    const { studentId, classId } = enrollData;
+    // Check if the user is already enrolled in the class
+    const existingEnrollment = await prisma.enrollment.findFirst({
+      where: {
+        studentId,
+        classId,
+      },
+    });
+
+    if (existingEnrollment) {
+      throw new HttpBadRequestError('User is already enrolled in the class');
+    }
+
+    // Check the class capacity
+    const classInfo = await prisma.class.findUnique({
+      where: {
+        id: classId,
+      },
+      include: {
+        classEnrollment: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    if (!classInfo) {
+      throw new HttpBadRequestError('Class not found');
+    }
+
+    const currentCapacity = classInfo.classEnrollment.length;
+
+    if (currentCapacity >= 20) {
+      throw new HttpBadRequestError(
+        'Class is full. Cannot enroll more students.'
+      );
+    }
+
+    // Enroll the student in the class
+    const enrollment = await prisma.enrollment.create({
+      data: {
+        studentId,
+        classId,
+      },
+    });
+
+    return enrollment;
   }
 }

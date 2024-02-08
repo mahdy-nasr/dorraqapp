@@ -79,6 +79,9 @@ users.get(
   userController.getCourses
 );
 
+// get course by Id
+users.get('/course', AuthGuard(), userController.getCours);
+
 users.post(
   '/create-course',
   AuthGuard(UserRole.TEACHER),
@@ -97,6 +100,13 @@ users.put(
   AuthGuard(UserRole.TEACHER),
   uploadImage.single('image'),
   userController.updateCourse
+);
+
+// enroll to class_room
+users.post(
+  '/enroll',
+  AuthGuard(UserRole.STUDENT),
+  userController.enrollInClassRoom
 );
 
 // lessons
@@ -141,7 +151,17 @@ users.post(
   userController.createQuizWithQuestionsAndOptions
 );
 
-// get lesson data
+// get lesson data**
+users.get('/video', AuthGuard(UserRole.TEACHER), userController.getVideo);
+
+users.get('/blog', AuthGuard(UserRole.TEACHER), userController.getBlog);
+
+users.get('/blog', AuthGuard(UserRole.TEACHER), userController.getQuestion);
+
+// delete lesson data*
+
+// add review*
+
 // video for lesson by lesson Id
 // blog ==
 // quiz by lessin Id and quiz info ?

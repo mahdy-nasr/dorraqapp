@@ -29,7 +29,7 @@
     createdAt DateTime @default(now()) @db.Timestamp(6)
     updatedAt DateTime @updatedAt @db.Timestamp(6)
     enabled Boolean @default(true) @db.Boolean
-    studentEnrollment Enrollment[] // one to many
+    studentEnrollment Enrollment[] 
     instructorCourse Course[]
     courseReview CourseReview[] 
     studentAnswer StudentAnswer[]
@@ -38,14 +38,10 @@
     @@map("enrollment")
     id          String    @id @db.Uuid @default(uuid())
     createdAt DateTime @default(now()) @db.Timestamp(6)
-    lessonNumber String   @db.VarChar(100)
-    description String    @db.VarChar(255)
-    courseId    String    @db.Uuid
-    tag String @db.VarChar(255)
-    studentId    String    @db.Uuid @unique
+    studentId    String    @db.Uuid 
     student     User     @relation(fields: [studentId], references: [id]) // many
-    classId    String    @db.Uuid @unique
-    class Class @relation(fields: [classId], references: [id]) // many
+    classId    String    @db.Uuid 
+    class Class @relation(fields: [classId], references: [id]) 
   }
   model Class {
     @@map("class")
@@ -59,9 +55,9 @@
     createdAt String @db.VarChar(15)
     length Int 
     slug String 
-    classEnrollment Enrollment[] // one to many
-    courseId    String    @db.Uuid @unique
-    class Course @relation(fields: [courseId], references: [id]) // many
+    classEnrollment Enrollment[]
+    courseId    String    @db.Uuid 
+    class Course @relation(fields: [courseId], references: [id])
   }
   model Course {
     @@map("course")
@@ -75,11 +71,11 @@
     level String @db.VarChar(15)
     length Int? 
     slug String 
-    class     Class[] // one to many
-    lessons     Lessons[] // one to many
+    class     Class[] 
+    lessons     Lessons[] 
     courseReview CourseReview[]
     instructorId    String    @db.Uuid
-    instructor User    @relation(fields: [instructorId], references: [id]) // many
+    instructor User    @relation(fields: [instructorId], references: [id]) 
   }
 
   model CourseReview {
@@ -127,7 +123,7 @@
     @@map("quiz")
     id String @id @db.Uuid @default(uuid())
     lessonsId String @db.Uuid @unique
-    Question     Question[]
+    question     Question[]
     lesson Lessons @relation("quiz",fields: [lessonsId], references: [id])
   }
   model Question{

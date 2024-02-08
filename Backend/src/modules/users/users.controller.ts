@@ -18,6 +18,8 @@ import {
   type UploadLessonVideo,
   type UploadLessonBlog,
   type CreateQuizInput,
+  type CreateEnrollmentInput,
+  type getVideoInput,
 } from './users.service';
 import { type CreateUserRequestDto } from './dto/user.dto';
 import { type UpdateUserRequestDto } from './dto/user-settings.dto';
@@ -121,16 +123,22 @@ export default class UserController extends Api {
     this.send(res, courses, Status.Ok);
   };
 
+  // get one course
+  public getCours = async (req: Request, res: Response) => {
+    const id = req.body.courseId;
+    const course = await this.userService.getCourseById(id);
+    this.send(res, course, Status.Ok);
+  };
+
   // create course
   public createCourse = async (
     req: Request<unknown, unknown, CreateCourseInput>,
     res: Response<Course>
   ) => {
-    // const instructorId = req.authUser?.getUser()?.id;
-    const instructorId = '1077f61f-aa8c-4131-9917-c93f290587d2';
-    // if (!instructorId) {
-    //   throw new HttpBadRequestError('Instructor ID not found');
-    // }
+    const instructorId = req.authUser?.getUser()?.id;
+    if (!instructorId) {
+      throw new HttpBadRequestError('Instructor ID not found');
+    }
     // Handle profile picture
     const imageFilePath: string | undefined = req.file?.filename
       ? encodeURIComponent(req.file.filename)
@@ -225,11 +233,10 @@ export default class UserController extends Api {
     req: Request<unknown, unknown, CreateLossonInput>,
     res: Response<Lessons>
   ) => {
-    // const instructorId = req.authUser?.getUser()?.id;
-    // if (!instructorId) {
-    //   throw new HttpBadRequestError('User ID not found');
-    // }
-    const instructorId = '1077f61f-aa8c-4131-9917-c93f290587d2';
+    const instructorId = req.authUser?.getUser()?.id;
+    if (!instructorId) {
+      throw new HttpBadRequestError('User ID not found');
+    }
     const lessonData: CreateLossonInput = {
       instructorId,
       courseId: req.body.courseId,
@@ -358,5 +365,55 @@ export default class UserController extends Api {
       console.error(error);
       throw new HttpInternalServerError('Error while creating quiz');
     }
+  };
+
+  // get lesson info
+  // video
+  public getVideo = async (
+    req: Request<unknown, unknown, getVideoInput>,
+    res: Response<Video>
+  ) => {
+    const videoId = req.body.videoId;
+    const studentId = req.body.studentId;
+    const classId = req.body.classId;
+
+    const videoData: getVideoInput = {
+      videoId,
+      studentId,
+      classId,
+    };
+
+    const video = await this.userService.getVideoById(videoData);
+    this.send(res, video!, Status.Ok);
+  };
+
+  // blog
+  public getBlog = async (req: Request, res: Response) => {
+    const id = req.body.lessonId;
+    const blog = await this.userService.getBlogById(id);
+    this.send(res, blog, Status.Ok);
+  };
+
+  // get question by quizId
+  public getQuestion = async (req: Request, res: Response) => {
+    const quizId = req.body.quizId;
+    const question = await this.userService.getQuestionsByQuizId(quizId);
+    this.send(res, question, Status.Ok);
+  };
+
+  // enroll in class
+  public enrollInClassRoom = async (
+    req: Request<unknown, unknown, CreateEnrollmentInput>,
+    res: Response
+  ) => {
+    const studentId = req.body.studentId;
+    const classId = req.body.classId;
+    const enrollData: CreateEnrollmentInput = {
+      studentId,
+      classId,
+    };
+
+    await this.userService.enrollInClass(enrollData);
+    this.send(res, Status.Ok);
   };
 }
