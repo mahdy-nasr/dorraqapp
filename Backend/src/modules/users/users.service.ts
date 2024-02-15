@@ -94,6 +94,11 @@ export interface getBlogInput {
   studentId: string;
   classId: string;
 }
+export interface getQuestionInput {
+  quizId: string;
+  studentId: string;
+  classId: string;
+}
 export default class UserService {
   // User
   public async createUser(userData: CreateUserInput): Promise<User> {
@@ -398,7 +403,18 @@ export default class UserService {
   }
 
   // get questions by quiz Id
-  public async getQuestionsByQuizId(quizId: string) {
+  public async getQuestionsByQuizId(quizData: getQuestionInput) {
+    const { studentId, classId, quizId } = quizData;
+    const existingEnrollment = await prisma.enrollment.findFirst({
+      where: {
+        studentId,
+        classId,
+      },
+    });
+
+    if (!existingEnrollment) {
+      throw new HttpBadRequestError('User is not enrolled in the class');
+    }
     // Find the quiz by its id
     const quiz = await prisma.quiz.findUnique({
       where: { id: quizId },
@@ -452,15 +468,6 @@ export default class UserService {
     if (!classInfo) {
       throw new HttpBadRequestError('Class not found');
     }
-
-    const currentCapacity = classInfo.classEnrollment.length;
-
-    if (currentCapacity >= 20) {
-      throw new HttpBadRequestError(
-        'Class is full. Cannot enroll more students.'
-      );
-    }
-
     // Enroll the student in the class
     const enrollment = await prisma.enrollment.create({
       data: {

@@ -71,6 +71,9 @@ users.put(
   userController.updateUserInfo
 );
 
+// Verify the login process
+users.get('/verfiy', AuthGuard(), userController.verifyUser);
+
 // dashboard instructor api
 // courses
 users.get(
@@ -152,11 +155,11 @@ users.post(
 );
 
 // get lesson data**
-users.get('/video', AuthGuard(UserRole.TEACHER), userController.getVideo);
+users.get('/video', AuthGuard(UserRole.STUDENT), userController.getVideo);
 
-users.get('/blog', AuthGuard(UserRole.TEACHER), userController.getBlog);
+users.get('/blog', AuthGuard(UserRole.STUDENT), userController.getBlog);
 
-users.get('/blog', AuthGuard(UserRole.TEACHER), userController.getQuestion);
+users.get('/blog', AuthGuard(UserRole.STUDENT), userController.getQuestion);
 
 // delete lesson data*
 

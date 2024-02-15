@@ -20,6 +20,8 @@ import {
   type CreateQuizInput,
   type CreateEnrollmentInput,
   type getVideoInput,
+  type getBlogInput,
+  type getQuestionInput,
 } from './users.service';
 import { type CreateUserRequestDto } from './dto/user.dto';
 import { type UpdateUserRequestDto } from './dto/user-settings.dto';
@@ -65,6 +67,14 @@ export default class UserController extends Api {
         (error as Error)?.message ?? 'Error while creating user'
       );
     }
+  };
+
+  public verifyUser = async (req: Request, res: Response<boolean>) => {
+    // Check if the user is authenticated
+    const isAuthenticated = req.authUser?.isAuthenticated();
+
+    // Return true if authenticated, false otherwise
+    return this.send(res, isAuthenticated!);
   };
 
   public updateUserInfo = async (
@@ -388,16 +398,38 @@ export default class UserController extends Api {
   };
 
   // blog
-  public getBlog = async (req: Request, res: Response) => {
-    const id = req.body.lessonId;
-    const blog = await this.userService.getBlogById(id);
+  public getBlog = async (
+    req: Request<unknown, unknown, getBlogInput>,
+    res: Response
+  ) => {
+    const blogId = req.body.blogId;
+    const studentId = req.body.studentId;
+    const classId = req.body.classId;
+
+    const blogData: getBlogInput = {
+      blogId,
+      studentId,
+      classId,
+    };
+    const blog = await this.userService.getBlogById(blogData);
     this.send(res, blog, Status.Ok);
   };
 
   // get question by quizId
-  public getQuestion = async (req: Request, res: Response) => {
+  public getQuestion = async (
+    req: Request<unknown, unknown, getQuestionInput>,
+    res: Response
+  ) => {
     const quizId = req.body.quizId;
-    const question = await this.userService.getQuestionsByQuizId(quizId);
+    const studentId = req.body.studentId;
+    const classId = req.body.classId;
+
+    const quizData: getQuestionInput = {
+      quizId,
+      studentId,
+      classId,
+    };
+    const question = await this.userService.getQuestionsByQuizId(quizData);
     this.send(res, question, Status.Ok);
   };
 
