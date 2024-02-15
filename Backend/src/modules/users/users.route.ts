@@ -3,7 +3,7 @@ import UserController from './users.controller';
 import { CreateUserRequestDto } from './dto/user.dto';
 import { RequestTypeValidator } from '@/middlewares/request-validator';
 import { AuthGuard } from '@/lib/authentication/auth.guard';
-
+import { upload } from '@/lib/multer';
 const users: Router = Router();
 const userController = new UserController();
 
@@ -22,11 +22,14 @@ const userController = new UserController();
  * @property {string} lastName - name of user
  * @property {string} profilePicture - profile picture of user
  * @property {string} country - country of user
+ * @property {string} city - city of user
  * @property {string} university - university of user
  * @property {string} language - language of user
  * @property {string} createdAt - created at
  * @property {string} role - role
  * @property {string} phone - phone number
+ * @property {string} gender - gender of user
+ * @property {string} education - education of user
  */
 /**
  * POST /users/continue-registration
@@ -51,4 +54,18 @@ users.post(
  */
 users.get('/login', AuthGuard(), userController.login);
 
+/**
+ * PUT /users/settings
+ * @summary Update user Information
+ * @tags users
+ * @return {User} 201 - user Info Updated
+ * @return  401 - unauthorized
+ * @return  403 - forbidden
+ */
+users.put(
+  '/settings',
+  AuthGuard(),
+  upload.single('image'),
+  userController.UpdateUserInfo
+);
 export default users;

@@ -1,3 +1,4 @@
+import fs from 'fs';
 import cors from 'cors';
 import nocache from 'nocache';
 import express from 'express';
@@ -24,6 +25,7 @@ class App {
     this.initializeDocs();
     setupSession(this.express);
     setupFirebase();
+    void this.createUploadDirectory();
   }
 
   private setMiddlewares(): void {
@@ -46,6 +48,7 @@ class App {
       api: { version },
     } = appConfig;
     this.express.use(`/api/${version}`, routes);
+    this.express.use('/image', express.static('Upload/Images'));
   }
 
   private setErrorHandler(): void {
@@ -54,6 +57,21 @@ class App {
 
   private initializeDocs(): void {
     expressJSDocSwagger(this.express)(expressJSDocSwaggerConfig);
+  }
+
+  private async createUploadDirectory(): Promise<void> {
+    console.log('Creating upload directory...');
+    const uploadDirectory = 'Upload/Images';
+    try {
+      // Check if the directory exists
+      if (!fs.existsSync(uploadDirectory)) {
+        // If not, create it
+        fs.mkdirSync(uploadDirectory, { recursive: true });
+        console.log(`${uploadDirectory} directory created.`);
+      }
+    } catch (error) {
+      console.error(`Error creating ${uploadDirectory} directory:`, error);
+    }
   }
 
   public async connectPrisma(): Promise<void> {

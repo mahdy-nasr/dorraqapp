@@ -6,22 +6,25 @@ import { HR } from '../src/utils/helper';
 const prisma = new PrismaClient();
 const seedUsers = async (): Promise<void> => {
   const fakeUsers = faker.helpers.uniqueArray<User>(
-    () =>
-      ({
-        id: faker.datatype.uuid(),
-        firstName: faker.name.firstName(),
-        lastName: faker.name.lastName(),
-        email: faker.internet.email(),
-        phone: null,
-        profilePicture: null,
-        country: null,
-        university: null,
-        language: 'arabic',
-        createdAt: faker.date.past(),
-        updatedAt: faker.date.recent(),
-        enabled: true,
-        role: 'student',
-      }) satisfies User,
+    () => ({
+      id: faker.datatype.uuid(),
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName(),
+      email: faker.internet.email(),
+      phone: null,
+      profilePicture: null,
+      country: null,
+      city: null,
+      university: null,
+      education: null,
+      language: 'arabic',
+      createdAt: faker.date.past(),
+      updatedAt: faker.date.recent(),
+      enabled: true,
+      gender: null,
+      role: 'student',
+      firebaseUid: faker.datatype.uuid(),
+    }),
     3
   );
 

@@ -2,7 +2,9 @@ import { type Response, type Request } from 'express';
 import { type User } from '@prisma/client';
 import { HttpStatusCode as Status } from 'axios';
 import UserService from './users.service';
+import { type UpdateUserInput } from './users.service';
 import { type CreateUserRequestDto } from './dto/user.dto';
+import { type UpdateUserRequestDto } from './dto/user-settings.dto';
 import Api from '@/lib/api';
 import { HttpBadRequestError, HttpInternalServerError } from '@/lib/errors';
 export default class UserController extends Api {
@@ -41,5 +43,49 @@ export default class UserController extends Api {
         (error as Error)?.message ?? 'Error while creating user'
       );
     }
+  };
+
+  public UpdateUserInfo = async (
+    req: Request<unknown, unknown, UpdateUserRequestDto>,
+    res: Response
+  ) => {
+    const userId = req.authUser?.getUser()?.id;
+    if (!userId) {
+      throw new HttpBadRequestError('User ID not found');
+    }
+    const data: Partial<UpdateUserInput['data']> = {};
+    // Mapping request body fields to data object
+    const fieldsToUpdate: Array<keyof UpdateUserRequestDto> = [
+      'firstName',
+      'lastName',
+      'country',
+      'city',
+      'university',
+      'education',
+      'phone',
+      'language',
+      'gender',
+      'profilePicture',
+    ];
+    fieldsToUpdate.forEach((field) => {
+      if (req.body[field]) {
+        data[field] = req.body[field];
+      }
+    });
+    // Handle profile picture
+    const imageFilePath: string | undefined = req.file?.filename
+      ? encodeURIComponent(req.file.filename)
+      : undefined;
+
+    if (imageFilePath) {
+      data.profilePicture = `http://localhost:3000/image/${imageFilePath}`;
+    }
+
+    const updatedUser = await this.userService.updateUser({
+      id: userId,
+      data,
+    });
+
+    this.send(res, updatedUser, Status.Ok);
   };
 }
