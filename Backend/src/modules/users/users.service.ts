@@ -433,6 +433,26 @@ export default class UserService {
   }
 
   // delete lesson data
+  // delete video by id
+  public async deleteVideoById(videoId: string): Promise<void> {
+    await prisma.video.delete({
+      where: { id: videoId },
+    });
+  }
+
+  // delete blog by id
+  public async deleteBlogById(blogId: string): Promise<void> {
+    await prisma.blog.delete({
+      where: { id: blogId },
+    });
+  }
+
+  // delete question by id
+  public async deleteQuestionById(questionId: string): Promise<void> {
+    await prisma.question.delete({
+      where: { id: questionId },
+    });
+  }
 
   // enroll to calss_room
   public async enrollInClass(

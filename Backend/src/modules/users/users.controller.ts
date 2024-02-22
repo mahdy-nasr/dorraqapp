@@ -104,7 +104,7 @@ export default class UserController extends Api {
         data[field] = req.body[field];
       }
     });
-    // Handle profile picture
+    // handle profile picture
     const imageFilePath: string | undefined = req.file?.filename
       ? encodeURIComponent(req.file.filename)
       : undefined;
@@ -149,7 +149,7 @@ export default class UserController extends Api {
     if (!instructorId) {
       throw new HttpBadRequestError('Instructor ID not found');
     }
-    // Handle profile picture
+    // handle profile picture
     const imageFilePath: string | undefined = req.file?.filename
       ? encodeURIComponent(req.file.filename)
       : undefined;
@@ -219,7 +219,7 @@ export default class UserController extends Api {
         data[field] = req.body[field]!;
       }
     });
-    // Handle profile picture
+    // handle profile picture
     const imageFilePath: string | undefined = req.file?.filename
       ? encodeURIComponent(req.file.filename)
       : undefined;
@@ -320,7 +320,7 @@ export default class UserController extends Api {
     res: Response<Video>
   ) => {
     const lessonsId = req.body.lessonsId;
-    // Handle video
+    // handle video
     const videoFilePath: string | undefined = req.file?.filename
       ? encodeURIComponent(req.file.filename)
       : undefined;
@@ -431,6 +431,28 @@ export default class UserController extends Api {
     };
     const question = await this.userService.getQuestionsByQuizId(quizData);
     this.send(res, question, Status.Ok);
+  };
+
+  // delete lesson data
+  // delete video
+  public deleteVideo = async (req: Request, res: Response) => {
+    const id = req.body.videoId;
+    await this.userService.deleteVideoById(id);
+    this.send(res, Status.NoContent);
+  };
+
+  // delete blog
+  public deleteBlog = async (req: Request, res: Response) => {
+    const id = req.body.blogId;
+    await this.userService.deleteBlogById(id);
+    this.send(res, Status.NoContent);
+  };
+
+  // delete question
+  public deleteQuestion = async (req: Request, res: Response) => {
+    const id = req.body.questionId;
+    await this.userService.deleteBlogById(id);
+    this.send(res, Status.NoContent);
   };
 
   // enroll in class

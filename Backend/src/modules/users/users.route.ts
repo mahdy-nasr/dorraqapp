@@ -154,26 +154,36 @@ users.post(
   userController.createQuizWithQuestionsAndOptions
 );
 
-// get lesson data**
+// get lesson data
 users.get('/video', AuthGuard(UserRole.STUDENT), userController.getVideo);
 
 users.get('/blog', AuthGuard(UserRole.STUDENT), userController.getBlog);
 
-users.get('/blog', AuthGuard(UserRole.STUDENT), userController.getQuestion);
-
-// delete lesson data*
-
-// add review*
-
-// video for lesson by lesson Id
-// blog ==
-// quiz by lessin Id and quiz info ?
+users.get('/question', AuthGuard(UserRole.STUDENT), userController.getQuestion);
 
 // delete video - blog - quiz by Id
+// delete video
+users.delete(
+  '/deleteVideo',
+  AuthGuard(UserRole.TEACHER),
+  userController.deleteVideo
+);
+
+// delete blog
+users.delete(
+  '/deleteBlog',
+  AuthGuard(UserRole.TEACHER),
+  userController.deleteBlog
+);
+
+// delete question
+users.delete(
+  '/deleteQuestion',
+  AuthGuard(UserRole.TEACHER),
+  userController.deleteQuestion
+);
+
+// add review
 // users.post('/review', AuthGuard(UserRole.STUDENT), userController.addReview);
-// users.post('/my-students', AuthGuard(UserRole.TEACHER), userController.getStudents);
-// progress
-// feedback questions (per class)
-// Question banks
 
 export default users;
